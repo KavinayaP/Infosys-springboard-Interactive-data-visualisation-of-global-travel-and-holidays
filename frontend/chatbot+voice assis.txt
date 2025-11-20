@@ -1,0 +1,74 @@
+/* VOICE ASSISTANT */
+const micBtn = document.getElementById("micBtn");
+let recognition;
+let listening = false;
+
+if ("webkitSpeechRecognition" in window) {
+    recognition = new webkitSpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    recognition.onstart = () => {
+        listening = true;
+        micBtn.innerHTML = "🎙️";
+        micBtn.classList.add("animate-pulse");
+    };
+
+    recognition.onend = () => {
+        listening = false;
+        micBtn.innerHTML = "🎤";
+        micBtn.classList.remove("animate-pulse");
+    };
+
+    recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        chatInput.value = text;
+        sendBtn.click();  // auto send
+    };
+
+    micBtn.onclick = () => {
+        if (!listening) recognition.start();
+        else recognition.stop();
+    };
+} else {
+    micBtn.style.opacity = "0.4";
+    micBtn.style.pointerEvents = "none";
+}
+
+
+
+
+add VOICE
+
+const u = new SpeechSynthesisUtterance(msg);
+u.lang = "en-US";
+speechSynthesis.speak(u);
+
+
+function appendBot(msg){
+  chatWindow.innerHTML += `
+    <div>
+      <div class="inline-block bg-white/10 px-4 py-2 rounded-xl">${msg}</div>
+    </div>
+  `;
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+
+  // bot speaks
+  const u = new SpeechSynthesisUtterance(msg);
+  u.lang = "en-US";
+  speechSynthesis.speak(u);
+}
+function appendBot(msg){
+  chatWindow.innerHTML += `
+    <div>
+      <div class="inline-block bg-white/10 px-4 py-2 rounded-xl">${msg}</div>
+    </div>
+  `;
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+
+  // bot speaks
+  const u = new SpeechSynthesisUtterance(msg);
+  u.lang = "en-US";
+  speechSynthesis.speak(u);
+}

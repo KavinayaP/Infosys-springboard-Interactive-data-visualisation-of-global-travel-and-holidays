@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Notifications — Global Travel Insights</title>
+
+  <!-- Tailwind for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS (scroll animations) -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-1:#021428;
+      --bg-2:#042a3f;
+      --accent:#19b6ff;
+      --glass-bg: rgba(255,255,255,0.04);
+      --card-bg: rgba(255,255,255,0.03);
+    }
+    html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#e6f2fb;}
+    /* world/planet on the right */
+    .hero-globe{
+      position: absolute; right:6%; top:8%;
+      width:420px; height:420px; border-radius:50%;
+      background: radial-gradient(circle at 30% 25%, rgba(28, 123, 167, 0.12), rgba(2,62,92,0.6));
+      box-shadow: inset 0 6px 30px rgba(0,0,0,0.5), 0 40px 120px rgba(2,8,23,0.6);
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+      z-index:0;
+    }
+    .globe-dots{position:absolute; width:100%; height:100%;}
+    .globe-dot{
+      position:absolute; width:10px;height:10px;border-radius:999px;
+      background:rgba(255,255,255,0.85); box-shadow:0 0 10px rgba(25,182,255,0.18);
+      opacity:.9;
+    }
+    /* floating chat bubble */
+    .chat-floating{
+      position:fixed; right:28px; bottom:28px; z-index:60;
+      width:56px; height:56px; border-radius:999px;
+      background: linear-gradient(135deg,#2dd4bf,#3b82f6);
+      display:flex; align-items:center; justify-content:center; box-shadow: 0 10px 30px rgba(3,7,18,0.45);
+      cursor:pointer;
+    }
+    /* nav glass */
+    .nav-glass{ background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); backdrop-filter: blur(6px); }
+    /* cards */
+    .glass-card{
+      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06);
+      border-radius:14px; padding:18px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.4);
+    }
+    /* swipe remove */
+    .swipe-card { transition: transform .28s ease, opacity .28s ease; }
+    .swipe-card.removed { transform: translateX(-140%); opacity:0; }
+
+    /* toast slide */
+    @keyframes slideDown { from{ transform: translateY(-18px); opacity:0 } to{ transform: translateY(0); opacity:1 } }
+    .toast { animation: slideDown .42s cubic-bezier(.2,.9,.3,1); }
+
+    /* small responsive tweaks */
+    @media (max-width:900px){
+      .hero-globe{ width:260px;height:260px; right:6%; top:18%; opacity:.9; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR (matches your screenshot) -->
+  <header class="sticky top-0 z-40 nav-glass">
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-indigo-600 flex items-center justify-center text-white font-bold shadow">GT</div>
+        <div class="text-white font-semibold text-lg">Global Travel Insights</div>
+      </div>
+
+      <div class="flex items-center gap-4 text-sm">
+        <a href="dashboards.html" class="text-white/80 hover:text-white">Dashboards</a>
+        <a href="insights.html" class="text-white/80 hover:text-white">Insights</a>
+        <a href="feedback.html" class="text-white/80 hover:text-white">Feedback</a>
+
+        <!-- Notifications (hidden until login) -->
+        <a id="navNotifications" href="notifications.html" style="display:none;"
+           class="relative px-3 py-2 rounded bg-white/6 text-white/90">
+           Notifications
+           <span id="notifyBadge" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full"></span>
+        </a>
+
+        <a id="navQuiz" href="quiz.html" style="display:none;" class="px-3 py-2 rounded bg-white/6 text-white/90">Quiz</a>
+
+        <!-- Profile (user told me they already have this line, but keeping aligned) -->
+        <a id="navProfile" href="profile.html" style="display:none;" class="px-3 py-2 rounded bg-white text-blue-900 font-semibold">Profile</a>
+
+        <button id="navLogout" style="display:none;" class="px-3 py-2 bg-red-600 text-white rounded font-semibold">Logout</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="max-w-6xl mx-auto px-6 py-10 relative">
+    <h1 class="text-4xl font-extrabold text-white mb-4">Notifications</h1>
+    <p class="text-white/75 mb-8">All updates from dashboards, reports and system alerts. Swipe left on mobile or click × to remove.</p>
+
+    <!-- notifications list -->
+    <section id="notifyList" class="space-y-5"></section>
+  </main>
+
+  <!-- floating chat bubble (stays on all pages) -->
+  <div id="chatFloating" class="chat-floating hidden md:flex chat-floating" title="Assistant">
+    <div class="chat-floating" style="width:56px;height:56px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#06b6d4,#3b82f6);box-shadow:0 8px 30px rgba(2,6,23,0.45);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" fill="#fff"/></svg>
+    </div>
+  </div>
+
+  <!-- small helper container for toasts -->
+  <div id="toastContainer" aria-hidden="true"></div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // AOS init
+    AOS.init({ duration: 800, once: true });
+
+    /* ---------------------------
+       Auth + Navbar show/hide
+       --------------------------- */
+    function updateNavbarAuth(){
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      const show = id => { const el = document.getElementById(id); if(el) el.style.display = ""; }
+      const hide = id => { const el = document.getElementById(id); if(el) el.style.display = "none"; }
+
+      if(loggedIn){
+        hide('navLogin'); hide('navCreate'); // if these exist on other pages
+        show('navNotifications'); show('navQuiz'); show('navProfile'); show('navLogout');
+      } else {
+        show('navLogin'); show('navCreate');
+        hide('navNotifications'); hide('navQuiz'); hide('navProfile'); hide('navLogout');
+      }
+    }
+    // run once (pages that don't have navLogin/navCreate still work)
+    updateNavbarAuth();
+
+    /* ---------------------------
+       Notification engine
+       - showToast: slide-in popup + sound + save
+       - loadNotifications: render list
+       - swipe/delete handlers
+       - badge update
+       --------------------------- */
+    const STORAGE_KEY = 'gti_notifications_theme5_v1';
+
+    function showToast(message){
+      // create popup
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast fixed top-6 right-6 glass px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-[9999]';
+      toast.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.88))';
+      toast.innerHTML = `<span style="font-size:20px">🔔</span><div style="color:#003047;font-weight:700">${escapeHtml(message)}</div>`;
+      container.appendChild(toast);
+
+      // play sound (assets/sounds/ping.mp3)
+      try {
+        const audio = new Audio('assets/sounds/ping.mp3');
+        audio.volume = 0.45;
+        audio.play().catch(()=>{/* ignore */});
+      } catch(e){ /* ignore */ }
+
+      // persist
+      const logs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      logs.unshift({ id: Date.now(), text: message, time: new Date().toLocaleString() });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+      updateBadge();
+      loadNotifications();
+
+      // remove toast
+      setTimeout(()=> {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(()=> toast.remove(), 450);
+      }, 3800);
+    }
+
+    function updateBadge(){
+      const badge = document.getElementById('notifyBadge');
+      if(!badge) return;
+      const logs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      badge.innerText = logs.length || '';
+      badge.style.display = logs.length ? '' : 'none';
+    }
+
+    function loadNotifications(){
+      const list = document.getElementById('notifyList');
+      const logs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      list.innerHTML = '';
+
+      if(logs.length === 0){
+        list.innerHTML = `<div class="glass-card text-center py-8" data-aos="fade-up">
+                            <div style="color:#083245;font-weight:700">You're all caught up</div>
+                            <div style="color:#1a718f" class="mt-1">No notifications yet</div>
+                          </div>`;
+        return;
+      }
+
+      logs.forEach((n, idx) => {
+        const card = document.createElement('div');
+        card.className = 'swipe-card glass-card flex items-center justify-between';
+        card.style.display = 'flex'; card.style.gap = '18px';
+        card.setAttribute('data-id', n.id);
+
+        card.innerHTML = `
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#06b6d4,#3b82f6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">🔔</div>
+              <div>
+                <div style="font-weight:700;color:#022f3b">${escapeHtml(n.text)}</div>
+                <div style="font-size:12px;color:#0b6372;margin-top:6px">${escapeHtml(n.time)}</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-left:12px; display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+            <button class="btn-mark" title="Mark read/unread" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:#083245;padding:6px 10px;border-radius:8px">Mark</button>
+            <button class="btn-del" title="Delete" style="background:#ef4444;color:white;padding:6px 10px;border-radius:8px">Delete</button>
+          </div>
+        `;
+        card.setAttribute('data-aos', 'fade-up');
+        list.appendChild(card);
+
+        // wire buttons
+        card.querySelector('.btn-del').onclick = () => removeNotification(n.id, card);
+        card.querySelector('.btn-mark').onclick = () => toggleMark(n.id);
+      });
+
+      // enable swipe on mobile
+      enableSwipeToDelete();
+      updateBadge();
+    }
+
+    function removeNotification(id, cardEl){
+      cardEl.classList.add('removed');
+      setTimeout(()=> {
+        const logs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]').filter(x => x.id !== id);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        loadNotifications();
+      }, 260);
+    }
+
+    function toggleMark(id){
+      // demo: simply remove or toggle text style — here we'll remove for simplicity
+      const logs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const idx = logs.findIndex(x => x.id === id);
+      if(idx >= 0){
+        // demo behavior: move to end (mark seen)
+        const [item] = logs.splice(idx,1);
+        logs.push(item);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        loadNotifications();
+      }
+    }
+
+    function enableSwipeToDelete(){
+      let startX = 0;
+      document.querySelectorAll('.swipe-card').forEach(card => {
+        card.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        card.addEventListener('touchmove', e => {
+          const moveX = e.touches[0].clientX;
+          const diff = moveX - startX;
+          if(diff < -80){
+            // simulate delete
+            const id = Number(card.getAttribute('data-id'));
+            removeNotification(id, card);
+          }
+        });
+      });
+    }
+
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    // initialize with sample notifications if empty (demo)
+    (function seedDemo(){
+      const initial = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if(initial.length === 0){
+        const demo = [
+          { id: Date.now()+1, text: 'Destination Popularity updated — Samoa climbs to top', time: new Date().toLocaleString() },
+          { id: Date.now()+2, text: 'New insight: Holiday spending trend (Q3) added', time: new Date().toLocaleString() },
+          { id: Date.now()+3, text: 'Monthly report ready: Global Travel Recovery', time: new Date().toLocaleString() }
+        ];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
+      }
+      loadNotifications();
+      updateBadge();
+    })();
+
+    // optional auto-demo push every 22s (remove in production)
+    setInterval(()=> {
+      const msgs = [
+        'Dashboard refreshed: Travel Statistics',
+        'New alert: Recovery index change detected',
+        'Report available: Country receipts summary',
+        'Insight: Peak months updated for Europe',
+      ];
+      const m = msgs[Math.floor(Math.random()*msgs.length)];
+      showToast(m);
+    }, 22000);
+
+    // expose showToast for console/testing
+    window.gtiShowToast = showToast;
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Feedback — Global Travel Insights</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- AOS -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+    body{
+        font-family:'Poppins',sans-serif;
+        background: linear-gradient(180deg,#021029 0%, #042f4a 100%);
+        color:#e6eef8;
+    }
+    .glass{
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.05);
+        backdrop-filter:blur(8px);
+    }
+    .card-hover{transition:.25s;}
+    .card-hover:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.4);}
+</style>
+
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-50 bg-[#021021]/60 backdrop-blur">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-blue-600 flex items-center justify-center text-white font-bold">GT</div>
+      <span class="font-extrabold text-white text-xl">Global Travel Insights</span>
+    </a>
+
+    <ul class="hidden md:flex items-center gap-4 text-white">
+      <li><a href="index.html" class="hover:underline">Home</a></li>
+      <li><a href="dashboards.html" class="hover:underline">Dashboards</a></li>
+      <li><a href="insights.html" class="hover:underline">Insights</a></li>
+      <li><a href="feedback.html" class="underline">Feedback</a></li>
+
+      <li id="navLogin"><a href="login.html" class="px-3 py-2 bg-white/20 rounded">Login</a></li>
+      <li id="navCreate"><a href="register.html" class="px-3 py-2 bg-white/20 rounded">Create</a></li>
+
+      <li id="navNotifications" style="display:none;"><a href="notifications.html">Notifications</a></li>
+      <li id="navQuiz" style="display:none;"><a href="quiz.html">Quiz</a></li>
+      <li id="navProfile" style="display:none;"><a href="profile.html" class="px-3 py-2 bg-white text-blue-800 rounded">Profile</a></li>
+      <li id="navLogout" style="display:none;"><button class="px-3 py-2 bg-red-600 rounded">Logout</button></li>
+    </ul>
+
+    <button id="mobileToggle" class="text-white text-2xl md:hidden">☰</button>
+  </div>
+
+  <div id="mobileMenu" class="hidden bg-white/5 p-4 md:hidden">
+    <a href="index.html" class="block py-2 text-white">Home</a>
+    <a href="dashboards.html" class="block py-2 text-white">Dashboards</a>
+    <a href="insights.html" class="block py-2 text-white">Insights</a>
+    <a href="feedback.html" class="block py-2 text-white">Feedback</a>
+
+    <a id="mLogin" href="login.html" class="block py-2 text-white">Login</a>
+    <a id="mCreate" href="register.html" class="block py-2 text-white">Create</a>
+
+    <a id="mProfile" href="profile.html" class="block py-2 text-white" style="display:none;">Profile</a>
+    <button id="mLogout" class="block w-full py-2 text-white bg-red-600 rounded mt-2" style="display:none;">Logout</button>
+  </div>
+</header>
+
+
+<!-- MAIN -->
+<main class="max-w-5xl mx-auto px-4 py-10">
+
+  <h1 class="text-3xl font-extrabold mb-3" data-aos="fade-down">Leave Your Feedback</h1>
+  <p class="text-slate-300 mb-10" data-aos="fade-up">
+    Rate our dashboards, share your experience, upload screenshots and help us improve!
+  </p>
+
+
+  <!-- SECTION • Dashboard Rating -->
+  <section class="glass rounded-2xl p-6 mb-8 card-hover" data-aos="fade-up">
+    <h2 class="text-xl font-bold text-cyan-300">1 • Rate Our Dashboards</h2>
+
+    <label class="block mt-4 text-slate-200">Choose Dashboard</label>
+    <select id="dashboardSelect" class="w-full mt-2 p-2 rounded bg-white/10 border border-white/10">
+      <option>Global Destination Popularity</option>
+      <option>Travel Statistics Dashboard</option>
+      <option>Recovery & Holiday Impact</option>
+    </select>
+
+    <!-- STAR RATING -->
+    <div class="mt-4 flex gap-2 text-3xl text-yellow-400 cursor-pointer" id="starRating">
+      <span data-val="1">★</span>
+      <span data-val="2">★</span>
+      <span data-val="3">★</span>
+      <span data-val="4">★</span>
+      <span data-val="5">★</span>
+    </div>
+
+    <!-- Emoji Rating -->
+    <label class="block mt-4 text-slate-200">How was your experience?</label>
+    <div class="text-4xl mt-2 flex gap-4 cursor-pointer" id="emojiRow">
+      <span>😡</span>
+      <span>😕</span>
+      <span>😐</span>
+      <span>😊</span>
+      <span>🤩</span>
+    </div>
+  </section>
+
+
+  <!-- SECTION • Feedback -->
+  <section class="glass rounded-2xl p-6 mb-8 card-hover" data-aos="fade-up">
+    <h2 class="text-xl font-bold text-teal-300">2 • Your Feedback</h2>
+
+    <textarea id="feedbackText" class="w-full mt-4 p-4 rounded bg-white/10 border border-white/10" rows="5"
+              placeholder="Tell us what you liked or what needs improvement..."></textarea>
+  </section>
+
+
+  <!-- SECTION • Screenshot Upload -->
+  <section class="glass rounded-2xl p-6 mb-8 card-hover" data-aos="fade-up">
+    <h2 class="text-xl font-bold text-lime-300">3 • Upload Screenshot (optional)</h2>
+
+    <input id="screenshot" type="file" accept="image/*" class="w-full mt-4">
+  </section>
+
+
+  <!-- Submit -->
+  <button id="submitFeedback" class="px-6 py-3 rounded bg-gradient-to-br from-teal-400 to-blue-600 text-white font-bold shadow-lg hover:scale-105 transition">
+    Submit Feedback
+  </button>
+
+  <p id="msg" class="mt-4 text-green-400 hidden">Thank you! Feedback submitted.</p>
+
+</main>
+
+
+
+<!-- FLOATING CHAT BUTTON -->
+<div id="chatBtn" class="fixed right-6 bottom-6 z-50">
+  <button id="openChat" class="bg-gradient-to-br from-teal-400 to-blue-600 p-3 rounded-full shadow-lg text-white transform hover:scale-110 transition">💬</button>
+</div>
+
+<!-- CHAT PANEL -->
+<div id="chatPanel" class="hidden fixed right-6 bottom-28 bg-white rounded-2xl shadow-2xl z-60" style="width:360px; max-width:92vw;">
+  <div class="p-3 flex items-center justify-between border-b">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-blue-600 flex items-center justify-center text-white font-bold">AI</div>
+      <div>
+        <div class="font-semibold">Assistant</div>
+        <div class="text-xs text-slate-500">Ask anything — insights or help</div>
+      </div>
+    </div>
+    <button id="closeChat" class="text-slate-500">✕</button>
+  </div>
+
+  <div id="chatHistory" class="p-4 h-64 overflow-y-auto bg-white/40"></div>
+
+  <form id="chatForm" class="flex items-center gap-2 p-3 border-t bg-white/30">
+    <input id="chatInput" class="flex-1 bg-transparent border border-white/6 rounded px-3 py-2 text-slate-900"
+           placeholder="Ask something...">
+    <button class="px-4 py-2 rounded bg-gradient-to-br from-teal-400 to-blue-600 text-white">Send</button>
+  </form>
+</div>
+
+
+
+<!-- SCRIPT -->
+<script>
+AOS.init({ duration:800, once:true });
+
+/* ---------- NAVBAR AUTH ----------- */
+function setupAuthNav(){
+    const loggedIn = localStorage.getItem("loggedIn")==="true";
+    const show = (id, state)=>{
+        const el=document.getElementById(id); if(el) el.style.display = state?"":"none";
+    }
+    show("navLogin", !loggedIn);
+    show("navCreate", !loggedIn);
+    show("navProfile", loggedIn);
+    show("navLogout", loggedIn);
+    show("navNotifications", loggedIn);
+    show("navQuiz", loggedIn);
+
+    show("mLogin", !loggedIn);
+    show("mCreate", !loggedIn);
+    show("mProfile", loggedIn);
+    show("mLogout", loggedIn);
+
+    document.getElementById("navLogout")?.addEventListener('click',()=>{
+        localStorage.setItem("loggedIn","false");
+        window.location.href="login.html";
+    });
+    document.getElementById("mLogout")?.addEventListener('click',()=>{
+        localStorage.setItem("loggedIn","false");
+        window.location.href="login.html";
+    });
+}
+setupAuthNav();
+
+/* ---------- MOBILE MENU ---------- */
+document.getElementById('mobileToggle')?.addEventListener('click',()=>{
+    document.getElementById('mobileMenu').classList.toggle('hidden');
+});
+
+/* ---------- FEEDBACK SUBMIT ---------- */
+document.getElementById('submitFeedback').onclick = ()=>{
+    document.getElementById('msg').classList.remove('hidden');
+};
+
+/* ---------- STAR RATING ---------- */
+const stars = document.querySelectorAll("#starRating span");
+stars.forEach(star=>{
+    star.onclick=()=>{
+        stars.forEach(s=>s.style.opacity=".3");
+        for(let i=0;i<star.dataset.val;i++){
+            stars[i].style.opacity="1";
+        }
+    }
+});
+
+/* ---------- EMOJI RATING ---------- */
+document.querySelectorAll("#emojiRow span").forEach(e=>{
+    e.onclick=()=>{
+        document.querySelectorAll("#emojiRow span").forEach(x=>x.style.opacity=".3");
+        e.style.opacity="1";
+    };
+});
+
+/* ---------- CHATBOT ---------- */
+const chatPanel=document.getElementById("chatPanel");
+document.getElementById("openChat").onclick=()=>{ chatPanel.classList.toggle("hidden"); };
+document.getElementById("closeChat").onclick=()=>{ chatPanel.classList.add("hidden"); };
+
+document.getElementById("chatForm").onsubmit=(e)=>{
+    e.preventDefault();
+    let txt=document.getElementById("chatInput").value.trim();
+    if(!txt) return;
+    pushUser(txt);
+    pushBot("Demo mode — real AI response will come after backend setup.");
+    document.getElementById("chatInput").value="";
+};
+
+function pushUser(t){
+    chatHistory.innerHTML+=`<div class="text-right mb-2"><span class="inline-block bg-blue-600 text-white px-3 py-1 rounded">${t}</span></div>`;
+    chatHistory.scrollTop=chatHistory.scrollHeight;
+}
+function pushBot(t){
+    chatHistory.innerHTML+=`<div class="text-left mb-2"><span class="inline-block bg-white text-slate-900 px-3 py-1 rounded">${t}</span></div>`;
+    chatHistory.scrollTop=chatHistory.scrollHeight;
+}
+</script>
+
+</body>
+</html>

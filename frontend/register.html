@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register — Global Travel Insights</title>
+
+  <!-- Tailwind (CDN for prototyping) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS animations -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: linear-gradient(180deg,#021029 0%, #032c3b 100%); color:#e6eef8; }
+    .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,0.04); }
+    .neon-btn { background: linear-gradient(90deg,#06b6d4,#0ea5e9); color:white; }
+    .small-muted { font-size:.85rem; color:#9fb6c8; }
+    .error { color:#ff7b7b; }
+    .success { color:#86efac; }
+    .hint { color:#cfeefb; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <div class="min-h-screen grid lg:grid-cols-2">
+
+    <!-- Decorative left -->
+    <div class="relative hidden lg:flex items-center justify-center p-12">
+      <div class="w-[520px] h-[520px] globe glass rounded-full flex items-center justify-center shadow-lg" data-aos="zoom-in">
+        <!-- keep the globe consistent with your theme -->
+        <svg viewBox="0 0 200 200" class="w-4/5 h-4/5">
+          <defs><radialGradient id="g2" cx="30%" cy="20%"><stop offset="0%" stop-color="#14b8a6" stop-opacity="0.12"/><stop offset="70%" stop-color="#075985" stop-opacity="0.16"/></radialGradient></defs>
+          <circle cx="100" cy="100" r="96" fill="url(#g2)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Register card -->
+    <div class="flex items-center justify-center p-8">
+      <div class="w-full max-w-md glass rounded-2xl p-8 shadow-lg" data-aos="fade-left">
+        <h2 class="text-2xl font-extrabold text-white mb-2">Create your account</h2>
+        <p class="text-sm text-slate-300 mb-6">Register to save feedback, access dashboards and use the AI assistant.</p>
+
+        <form id="registerForm" class="space-y-4" autocomplete="off" novalidate>
+          <div>
+            <label class="text-xs text-slate-300">Full name</label>
+            <input id="name" name="name" type="text" required class="w-full mt-1 px-3 py-2 rounded bg-white/10 text-white" placeholder="Your full name" />
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-300">Email</label>
+            <input id="regEmail" name="email" type="email" required class="w-full mt-1 px-3 py-2 rounded bg-white/10 text-white" placeholder="you@example.com" />
+            <p id="emailHelp" class="text-[12px] small-muted mt-1">We will verify your email. Frontend checks format; backend handles uniqueness.</p>
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-300">Password</label>
+            <input id="regPassword" name="password" type="password" required minlength="8" class="w-full mt-1 px-3 py-2 rounded bg-white/10 text-white" placeholder="At least 8 characters including A-Z, a-z, 0-9, symbol" />
+            <p class="text-[11px] small-muted mt-1">Password must contain uppercase, lowercase, number and a special character.</p>
+          </div>
+
+          <div id="regError" class="error text-sm hidden"></div>
+          <div id="regSuccess" class="success text-sm hidden"></div>
+
+          <button type="submit" class="neon-btn w-full py-2 rounded-lg font-semibold shadow">Create account & Sign in</button>
+
+          <p class="text-center mt-2 text-sm text-slate-200">
+            Already have an account? <a href="login.html" class="underline">Login</a>
+          </p>
+
+          <p class="mt-4 text-xs text-slate-400">
+            This page calls your backend at <code class="text-xs">http://127.0.0.1:8000/register</code> and then <code>http://127.0.0.1:8000/login</code>.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+  AOS.init({ duration:700 });
+
+  // BASE API URL (your confirmed backend)
+  const API = "http://127.0.0.1:8000";
+
+  // EMAIL regex (industry standard front-end check)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // PASSWORD: at least 8 chars, one upper, one lower, one digit, one special
+  const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!?&\-\+_=])[A-Za-z\d@#$%^&*!?&\-\+_=]{8,}$/;
+
+  // helper to hash password on client before sending (optional, backend should re-hash)
+  async function sha256Hex(text) {
+    const enc = new TextEncoder();
+    const data = enc.encode(text);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    const bytes = new Uint8Array(hash);
+    return Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  // redirect if already logged in
+  if (localStorage.getItem("loggedIn") === "true") {
+    window.location.href = "profile.html";
+  }
+
+  const regForm = document.getElementById('registerForm');
+  const regError = document.getElementById('regError');
+  const regSuccess = document.getElementById('regSuccess');
+
+  regForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    regError.classList.add('hidden'); regError.textContent = '';
+    regSuccess.classList.add('hidden'); regSuccess.textContent = '';
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const password = document.getElementById('regPassword').value;
+
+    // front-end checks
+    if (!name || !email || !password) {
+      regError.textContent = "Please fill all fields.";
+      regError.classList.remove('hidden');
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      regError.textContent = "Enter a valid email address (example@example.com).";
+      regError.classList.remove('hidden');
+      return;
+    }
+    if (!pwdRegex.test(password)) {
+      regError.textContent = "Password must be 8+ chars and include uppercase, lowercase, number & symbol.";
+      regError.classList.remove('hidden');
+      return;
+    }
+
+    // Build payload expected by your FastAPI: { username, email, password }
+    const payload = { username: name, email, password };
+
+    try {
+      // 1) Register user
+      const r = await fetch(`${API}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      let jr = null;
+      const ct = r.headers.get("content-type") || "";
+      if (ct.includes("application/json")) jr = await r.json();
+      else jr = { detail: await r.text() };
+
+      if (!r.ok) {
+        // show backend error (email exists or validation)
+        regError.textContent = jr.detail || jr.message || "Registration failed.";
+        regError.classList.remove('hidden');
+        return;
+      }
+
+      // 2) On success, automatically log the user in (industry-friendly)
+      // backend /login expects { email, password } and returns token + username
+      const loginResp = await fetch(`${API}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      let jl = null;
+      const ct2 = loginResp.headers.get("content-type") || "";
+      if (ct2.includes("application/json")) jl = await loginResp.json();
+      else jl = { detail: await loginResp.text() };
+
+      if (!loginResp.ok) {
+        // If login failed after register (rare), show message and stop
+        regError.textContent = jl.detail || jl.message || "Registered but login failed. Please login manually.";
+        regError.classList.remove('hidden');
+        // optional: redirect to login page after a pause
+        setTimeout(()=> window.location.href = "login.html", 1500);
+        return;
+      }
+
+      // 3) Save token and user in localStorage, redirect to profile
+      const token = jl.token || jl.access_token || null;
+      const username = jl.username || name;
+
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("gti_current_user", JSON.stringify({ email, username }));
+
+      regSuccess.textContent = "Registered and signed in! Redirecting to profile...";
+      regSuccess.classList.remove('hidden');
+
+      setTimeout(()=> { window.location.href = "profile.html"; }, 900);
+
+    } catch (err) {
+      console.error("Register/network error:", err);
+      regError.textContent = "Server unreachable. Start backend: uvicorn backend.main:app --reload";
+      regError.classList.remove('hidden');
+    }
+  });
+</script>
+</body>
+</html>

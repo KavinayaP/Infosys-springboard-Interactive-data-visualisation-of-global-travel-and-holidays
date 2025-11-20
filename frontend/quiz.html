@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Quiz — Global Travel Insights</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg1:#001428;
+      --bg2:#00315a;
+      --glass:rgba(255,255,255,0.05);
+      --border:rgba(255,255,255,0.12);
+      --accent:#00d4ff;
+    }
+    body {
+      background:linear-gradient(145deg, var(--bg1), var(--bg2));
+      font-family:'Poppins', sans-serif;
+      color:#eaffff;
+      overflow-x:hidden;
+      min-height:100vh;
+    }
+    .glass-card {
+      background:var(--glass);
+      border:1px solid var(--border);
+      border-radius:20px;
+      backdrop-filter:blur(10px);
+      transition:.25s ease;
+    }
+    .glass-card:hover {
+      transform:translateY(-4px);
+      box-shadow:0 10px 25px #0005;
+    }
+    .float-dot {
+      position:absolute;width:8px;height:8px;border-radius:50%;
+      background:#fff6;
+      box-shadow:0 0 10px #00d4ff;
+      animation:float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%{transform:translateY(0)}
+      50%{transform:translateY(-12px)}
+      100%{transform:translateY(0)}
+    }
+    .option {
+      cursor:pointer;
+      transition:.25s;
+    }
+    .option:hover {
+      background:rgba(255,255,255,0.15);
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- floating dots -->
+<div class="float-dot" style="top:15%; left:18%;"></div>
+<div class="float-dot" style="top:10%; right:25%; animation-delay:.4s"></div>
+<div class="float-dot" style="bottom:20%; left:10%; animation-delay:.8s"></div>
+<div class="float-dot" style="bottom:30%; right:14%; animation-delay:1.2s"></div>
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-50 backdrop-blur-md bg-white/5 border-b border-white/10">
+  <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center text-white">
+    
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center font-bold">GT</div>
+      <span class="font-semibold">Global Travel Insights</span>
+    </div>
+
+    <div class="flex gap-6 text-sm">
+      <a href="index.html">Home</a>
+      <a href="dashboards.html">Dashboards</a>
+      <a href="insights.html">Insights</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="notifications.html" id="navNotifications" style="display:none;">Notifications</a>
+      <a href="quiz.html" id="navQuiz" class="text-sky-300 font-semibold">Quiz</a>
+      <a href="profile.html" id="navProfile" style="display:none;" class="px-3 py-2 bg-white text-blue-900 rounded">Profile</a>
+      <button id="navLogout" style="display:none;" class="px-3 py-2 bg-red-600 rounded">Logout</button>
+    </div>
+  </nav>
+</header>
+
+<!-- MAIN QUIZ BOX -->
+<main class="max-w-4xl mx-auto px-6 py-12">
+  
+  <h1 class="text-4xl font-extrabold mb-4">Travel Insights Quiz</h1>
+  <p class="text-white/70 mb-8">Answer questions based on your travel dashboards.</p>
+
+  <div id="quizBox" class="glass-card p-8">
+
+    <!-- Question -->
+    <div id="questionText" class="text-2xl font-bold mb-6"></div>
+
+    <!-- Options -->
+    <div id="optionsBox" class="space-y-4"></div>
+
+    <!-- Buttons -->
+    <div class="flex justify-between mt-8">
+      <button id="prevBtn" class="px-5 py-2 bg-white/10 rounded hidden">Previous</button>
+      <button id="nextBtn" class="px-5 py-2 bg-sky-500 rounded">Next</button>
+    </div>
+
+  </div>
+
+  <!-- RESULT -->
+  <div id="resultBox" class="glass-card p-8 mt-10 hidden text-center">
+      <h2 class="text-3xl font-bold mb-4">Your Score</h2>
+      <div id="scoreText" class="text-5xl font-extrabold mb-3"></div>
+      <p class="text-white/60 mb-6">Explore dashboards to learn more!</p>
+
+      <button onclick="restartQuiz()" class="px-6 py-3 bg-sky-500 rounded">Retry Quiz</button>
+  </div>
+
+</main>
+
+<script>
+AOS.init({duration:700, once:true});
+
+// QUIZ DATA
+const quizData = [
+  {
+    q:"Which month shows the highest holiday travel peak?",
+    a:["October","December","July","March"],
+    c:1
+  },
+  {
+    q:"Which dashboard shows global destination popularity?",
+    a:["Dashboard 1","Dashboard 2","Dashboard 3","None"],
+    c:0
+  },
+  {
+    q:"What does the Recovery Index indicate?",
+    a:[
+      "Speed of spending growth",
+      "Travel level vs pre-pandemic",
+      "Airline revenue only",
+      "Visa approvals"
+    ],
+    c:1
+  },
+  {
+    q:"Which dashboard shows inbound/outbound trends?",
+    a:["Destination Dashboard","Travel Stats Dashboard","Recovery Dashboard","All"],
+    c:1
+  },
+  {
+    q:"Average travelers shown is approximately?",
+    a:["200M","1.5B","10M","450M"],
+    c:1
+  }
+];
+
+let current = 0;
+let answers = [];
+
+function loadQ(){
+  document.getElementById("questionText").innerText = quizData[current].q;
+
+  const box = document.getElementById("optionsBox");
+  box.innerHTML = "";
+
+  quizData[current].a.forEach((t,i)=>{
+    box.innerHTML += `
+      <div class="option p-4 rounded bg-white/5 border border-white/10"
+           id="op${i}" onclick="selectOpt(${i})">${t}</div>
+    `;
+  });
+
+  document.getElementById("prevBtn").style.display =
+    current === 0 ? "none" : "block";
+
+  document.getElementById("nextBtn").innerText =
+    current === quizData.length-1 ? "Finish" : "Next";
+}
+
+function selectOpt(i){
+  answers[current] = i;
+
+  quizData[current].a.forEach((_,x)=>{
+    document.getElementById("op"+x).style.background="rgba(255,255,255,0.05)";
+  });
+  document.getElementById("op"+i).style.background="#00d4ff55";
+}
+
+document.getElementById("nextBtn").onclick = () => {
+  if(answers[current]===undefined){
+    alert("Choose an answer!");
+    return;
+  }
+  if(current === quizData.length-1){
+    showResult();
+  } else {
+    current++;
+    loadQ();
+  }
+};
+
+document.getElementById("prevBtn").onclick = () => {
+  current--;
+  loadQ();
+};
+
+function showResult(){
+  let score = 0;
+  quizData.forEach((q,i)=>{
+    if(answers[i]===q.c) score++;
+  });
+  document.getElementById("scoreText").innerText = `${score} / ${quizData.length}`;
+  document.getElementById("quizBox").classList.add("hidden");
+  document.getElementById("resultBox").classList.remove("hidden");
+}
+
+function restartQuiz(){
+  current=0;
+  answers=[];
+  document.getElementById("resultBox").classList.add("hidden");
+  document.getElementById("quizBox").classList.remove("hidden");
+  loadQ();
+}
+
+loadQ();
+
+// NAVBAR LOGIN LOGIC
+function updateNav(){
+  const logged = localStorage.getItem("loggedIn")==="true";
+  const show=id=>document.getElementById(id).style.display="block";
+  const hide=id=>document.getElementById(id).style.display="none";
+
+  if(logged){
+    show("navNotifications");
+    show("navQuiz");
+    show("navProfile");
+    show("navLogout");
+  }else{
+    hide("navNotifications");
+    hide("navQuiz");
+    hide("navProfile");
+    hide("navLogout");
+  }
+}
+updateNav();
+document.getElementById("navLogout").onclick=()=>{
+  localStorage.setItem("loggedIn","false");
+  location.href="login.html";
+};
+</script>
+
+</body>
+</html>

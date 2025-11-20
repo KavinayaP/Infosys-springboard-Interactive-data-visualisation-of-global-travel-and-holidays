@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travel Insights & Stories</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="storytelling.css" />
+</head>
+
+<body>
+
+    <!-- NAVBAR (use your existing styles here) -->
+    <nav class="navbar">
+        <a href="../index.html">Home</a>
+        <a href="storytelling.html" class="active">Stories</a>
+        <a href="../dashboard.html">Dashboard</a>
+        <a href="../chatbot.html">Chatbot</a>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>Travel Insights & Stories</h1>
+        <p>Discover trends, travel patterns, best destinations and unique insights from around the world.</p>
+
+        <!-- Search -->
+        <input type="text" id="search" placeholder="Search stories, tags, or countries..." />
+        
+        <!-- Tags -->
+        <div id="tagsContainer"></div>
+    </section>
+
+    <!-- STORIES GRID -->
+    <main>
+        <div id="storiesGrid" class="stories-grid"></div>
+    </main>
+
+    <!-- MODAL -->
+    <div id="storyModal" class="modal hidden">
+        <div class="modal-content">
+            <button id="closeModal" class="close-btn">✖</button>
+            <div id="modalBody"></div>
+            <canvas id="storyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="storytelling.js"></script>
+</body>
+</html>

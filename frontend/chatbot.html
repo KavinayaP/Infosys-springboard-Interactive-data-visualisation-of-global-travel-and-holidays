@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Assistant — Global Travel Insights</title>
+
+  <!-- Tailwind (for quick styling) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS (optional animations) -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-1:#001528;
+      --bg-2:#00335a;
+      --glass: rgba(255,255,255,0.04);
+      --glass-strong: rgba(255,255,255,0.08);
+      --accent: #00d4ff;
+    }
+    html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(140deg,var(--bg-1),var(--bg-2));color:#eaf8ff}
+    /* NAV GLASS */
+    .nav-glass{ background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(255,255,255,0.03); }
+    /* CHAT WINDOW */
+    .chat-window { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius: 16px; }
+    .msg-user { background: linear-gradient(90deg,#0ea5e9,#06b6d4); color: white; border-radius: 14px; padding: 10px 14px; display:inline-block; max-width:80%; }
+    .msg-bot { background: rgba(255,255,255,0.06); color: #e6fbff; border-radius: 12px; padding: 10px 14px; display:inline-block; max-width:80%; }
+    .typing-dot { width:8px;height:8px;border-radius:50%;background:#fff8;margin-right:6px;opacity:0.9; box-shadow: 0 0 10px var(--accent); }
+    /* Floating mic */
+    .mic-float {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: 66px;
+      height: 66px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index: 80;
+      cursor: pointer;
+      box-shadow: 0 20px 50px rgba(3,7,18,0.6);
+      transition: transform .16s ease;
+      background: linear-gradient(135deg,#06b6d4,#3b82f6);
+    }
+    .mic-float:active{ transform: scale(.96); }
+    .mic-pulse { animation: micPulse 1.8s infinite; border-radius: 999px; position:absolute; inset: -8px; z-index: -1; }
+    @keyframes micPulse {
+      0% { box-shadow: 0 0 0 0 rgba(6,182,212,0.25); }
+      70% { box-shadow: 0 0 0 18px rgba(6,182,212,0.04); }
+      100% { box-shadow: 0 0 0 0 rgba(6,182,212,0.0); }
+    }
+    .mic-listening { box-shadow: 0 10px 30px rgba(3,7,18,0.6), 0 0 30px rgba(6,182,212,0.18); transform: scale(1.04); }
+    /* Input */
+    .input-glass { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); padding: 12px 14px; border-radius: 12px; color: #eaf8ff; }
+    /* small helpers */
+    .badge { background: #ef4444; color:white; font-size:12px; padding: 2px 8px; border-radius:999px; }
+    @media (max-width:720px){
+      .chat-window { height: 56vh; }
+      .mic-float { width:56px; height:56px; right:16px; bottom:16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50 nav-glass">
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-indigo-600 flex items-center justify-center text-white font-bold shadow">GT</div>
+        <div class="text-white font-semibold">Global Travel Insights</div>
+      </div>
+
+      <div class="flex items-center gap-4 text-sm">
+        <a href="dashboards.html" class="text-white/80 hover:text-white">Dashboards</a>
+        <a href="insights.html" class="text-white/80 hover:text-white">Insights</a>
+        <a href="feedback.html" class="text-white/80 hover:text-white">Feedback</a>
+
+        <!-- Chatbot link (ensure pages link correctly) -->
+        <a id="navChat" href="chatbot.html" class="text-white/90 hidden">Chatbot</a>
+
+        <!-- Notifications & quiz/profile show after login -->
+        <a id="navNotifications" href="notifications.html" style="display:none;" class="text-white/80">Notifications <span id="notifyBadgeSmall" class="badge" style="display:none;"></span></a>
+        <a id="navQuiz" href="quiz.html" style="display:none;" class="text-white/80">Quiz</a>
+        <a id="navProfile" href="profile.html" style="display:none;" class="px-3 py-2 bg-white text-blue-900 rounded font-semibold">Profile</a>
+        <button id="navLogout" style="display:none;" class="px-3 py-2 bg-red-600 rounded text-white">Logout</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <main class="max-w-4xl mx-auto px-6 py-10">
+    <h1 class="text-4xl font-extrabold mb-2">AI Assistant</h1>
+    <p class="text-white/70 mb-6">Ask about dashboards, destinations, spending or just chat. Tap mic to speak — assistant will reply with voice.</p>
+
+    <section class="chat-window w-full h-[68vh] p-5 overflow-y-auto" id="chatWindow" data-aos="fade-up">
+      <!-- messages appended here -->
+      <div id="startHint" class="text-white/50">Try: "Show top destinations" or tap the mic and ask out loud.</div>
+    </section>
+
+    <!-- input area (works for typing) -->
+    <div class="mt-4 flex gap-3 items-center">
+      <input id="chatInput" class="input-glass flex-1" placeholder="Type a question — or use the mic" autocomplete="off" />
+      <button id="sendBtn" class="px-4 py-2 rounded bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-semibold">Send</button>
+      <button id="clearBtn" title="Clear chat" class="px-3 py-2 rounded bg-white/5 text-white">Clear</button>
+    </div>
+  </main>
+
+  <!-- FLOATING MIC -->
+  <div id="micFloat" class="mic-float" title="Talk to assistant">
+    <div id="micPulse" class="mic-pulse" style="pointer-events:none;"></div>
+    <svg id="micIcon" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z" fill="#fff"/><path d="M19 11a1 1 0 0 1-2 0 5 5 0 0 0-10 0 1 1 0 1 1-2 0 5 5 0 0 0 4 4.9V19h-3a1 1 0 1 1 0-2h8a1 1 0 1 1 0 2h-3v-3.1A5 5 0 0 0 19 11z" fill="#fff" opacity="0.9"/></svg>
+  </div>
+
+<script>
+AOS.init({ duration: 700, once: true });
+
+/* --------------------------
+   Navbar auth + chat link
+   -------------------------- */
+function updateNavbarAuth(){
+  const logged = localStorage.getItem("loggedIn") === "true";
+  const show = id => { const el=document.getElementById(id); if(el) el.style.display = ""; }
+  const hide = id => { const el=document.getElementById(id); if(el) el.style.display = "none"; }
+
+  // Chat link always visible in app (we're on it), but still safe to show/hide
+  const navChat = document.getElementById("navChat");
+  if(navChat) navChat.style.display = "";
+
+  if(logged){
+    show("navNotifications"); show("navQuiz"); show("navProfile"); show("navLogout");
+  } else {
+    hide("navNotifications"); hide("navQuiz"); hide("navProfile"); hide("navLogout");
+  }
+
+  updateSmallBadge();
+}
+updateNavbarAuth();
+
+/* --------------------------
+   Utilities
+   -------------------------- */
+const chatWindow = document.getElementById('chatWindow');
+const inputEl = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const clearBtn = document.getElementById('clearBtn');
+const micFloat = document.getElementById('micFloat');
+const micPulse = document.getElementById('micPulse');
+const micIcon = document.getElementById('micIcon');
+
+const STORAGE_CHAT = 'gti_chat_v1';
+function saveMessage(role, text){
+  const logs = JSON.parse(localStorage.getItem(STORAGE_CHAT) || '[]');
+  logs.push({role, text, time: new Date().toLocaleString()});
+  localStorage.setItem(STORAGE_CHAT, JSON.stringify(logs));
+}
+
+/* --------------------------
+   Render helpers
+   -------------------------- */
+function appendUserMessage(msg){
+  // remove start hint
+  const sh = document.getElementById('startHint'); if(sh) sh.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'w-full flex justify-end mb-3';
+  const inner = document.createElement('div');
+  inner.className = 'msg-user';
+  inner.innerText = msg;
+  wrap.appendChild(inner);
+  chatWindow.appendChild(wrap);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  saveMessage('user', msg);
+}
+
+function appendBotMessage(msg){
+  const wrap = document.createElement('div');
+  wrap.className = 'w-full flex justify-start mb-3';
+  const inner = document.createElement('div');
+  inner.className = 'msg-bot';
+  inner.innerText = msg;
+  wrap.appendChild(inner);
+  chatWindow.appendChild(wrap);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  saveMessage('assistant', msg);
+
+  // speak (Text-to-Speech)
+  try {
+    if(window.speechSynthesis){
+      const u = new SpeechSynthesisUtterance(msg);
+      u.lang = 'en-US';
+      u.rate = 1.0;
+      window.speechSynthesis.cancel(); // stop previous
+      window.speechSynthesis.speak(u);
+    }
+  } catch(e){ console.warn('TTS error', e); }
+}
+
+/* typing indicator */
+function showTyping(){
+  const el = document.createElement('div');
+  el.className = 'w-full flex justify-start mb-3';
+  el.id = 'typingIndicator';
+  el.innerHTML = `<div class="msg-bot inline-flex items-center gap-2"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>`;
+  chatWindow.appendChild(el);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+function hideTyping(){
+  const el = document.getElementById('typingIndicator'); if(el) el.remove();
+}
+
+/* --------------------------
+   Clear chat
+   -------------------------- */
+clearBtn.addEventListener('click', ()=> {
+  if(!confirm('Clear conversation?')) return;
+  localStorage.removeItem(STORAGE_CHAT);
+  chatWindow.innerHTML = '<div id="startHint" class="text-white/50">Try: "Show top destinations" or tap the mic and ask out loud.</div>';
+});
+
+/* --------------------------
+   Basic send flow
+   - client sends message to backend /api/chat
+   - expects JSON { reply: "...", suggestions?: [...] }
+   - fallback demo reply if backend fails
+   -------------------------- */
+async function sendMessage(msg){
+  appendUserMessage(msg);
+  inputEl.value = '';
+  showTyping();
+
+  // POST to backend (FastAPI) - change endpoint as your backend path
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+
+    if(!res.ok) throw new Error('Network response not ok');
+
+    const data = await res.json();
+    const reply = data.reply || "Sorry, I couldn't find an answer. Try rephrasing.";
+    hideTyping();
+    appendBotMessage(reply);
+
+  } catch (err) {
+    console.warn('chat backend error', err);
+    hideTyping();
+    // fallback demo replies
+    const demo = getDemoReply(msg);
+    appendBotMessage(demo);
+  }
+}
+
+/* demo fallback */
+function getDemoReply(user){
+  const t = user.toLowerCase();
+  if(t.includes('top') && t.includes('dest')) return 'Top destinations (demo): USA, UK, Australia, Samoa.';
+  if(t.includes('total travelers') || t.includes('travelers')) return 'Total travelers (demo): 399bn. Total spending demo: $171.45T.';
+  if(t.includes('insight') || t.includes('insights')) return 'Key insight (demo): Leisure travel recovered faster than business travel in region A.';
+  return "Demo assistant: sorry, backend not connected. Say 'connect backend' to proceed.";
+}
+
+/* send button */
+sendBtn.addEventListener('click', ()=> {
+  const v = inputEl.value.trim();
+  if(!v) return;
+  sendMessage(v);
+});
+
+/* enter key */
+inputEl.addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendBtn.click();
+  }
+});
+
+/* load previous messages */
+(function loadHistory(){
+  const logs = JSON.parse(localStorage.getItem(STORAGE_CHAT) || '[]');
+  if(logs.length){
+    chatWindow.innerHTML = '';
+    logs.forEach(m=>{
+      if(m.role === 'user'){
+        const w = document.createElement('div'); w.className='w-full flex justify-end mb-3'; w.innerHTML = `<div class="msg-user">${m.text}</div>`;
+        chatWindow.appendChild(w);
+      } else {
+        const w = document.createElement('div'); w.className='w-full flex justify-start mb-3'; w.innerHTML = `<div class="msg-bot">${m.text}</div>`;
+        chatWindow.appendChild(w);
+      }
+    });
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+})();
+
+/* --------------------------
+   Speech Recognition (voice -> text)
+   Floating mic behaviour:
+   - single-tap to start listening
+   - tap again to stop
+   - on result auto-send message
+   -------------------------- */
+
+let recognition = null;
+let listening = false;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+
+if(SpeechRecognition){
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.onstart = () => {
+    listening = true;
+    micFloat.classList.add('mic-listening');
+    micPulse.style.display = '';
+  };
+  recognition.onend = () => {
+    listening = false;
+    micFloat.classList.remove('mic-listening');
+    micPulse.style.display = 'none';
+  };
+  recognition.onerror = (e) => {
+    console.warn('SpeechRecognition error', e);
+    listening = false;
+    micFloat.classList.remove('mic-listening');
+    micPulse.style.display = 'none';
+  };
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    // auto-send
+    sendMessage(transcript);
+  };
+} else {
+  // Not supported
+  micFloat.title = 'Voice not supported in this browser';
+  micPulse.style.display = 'none';
+  micFloat.style.opacity = '0.85';
+}
+
+/* mic click */
+micFloat.addEventListener('click', ()=>{
+  if(!recognition){
+    alert('Voice input not supported in this browser.');
+    return;
+  }
+  if(!listening){
+    try { recognition.start(); } catch(e){ console.warn(e); }
+  } else {
+    try { recognition.stop(); } catch(e){ console.warn(e); }
+  }
+});
+
+/* small helper to update notification badge small */
+function updateSmallBadge(){
+  const arr = JSON.parse(localStorage.getItem('gti_notifications_theme5_v1') || '[]');
+  const b = document.getElementById('notifyBadgeSmall');
+  if(!b) return;
+  if(arr.length) { b.style.display='inline-block'; b.innerText = arr.length; } else b.style.display='none';
+}
+
+/* expose helper to test from console */
+window.gtiSend = sendMessage;
+window.gtiAppend = appendBotMessage;
+
+/* connect frontend to backend */
+const res = await fetch("http://127.0.0.1:8000/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        message: msg,
+        history: chatHistoryArray
+    })
+});
+const data = await res.json();
+addBotMessage(data.reply);
+
+
+</script>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+// ---------------- Voice Button Logic ----------------
+const voiceBtn = document.getElementById("voiceBtn");
+const statusText = document.getElementById("voiceStatus");
+
+// Start / Stop Recording
+voiceBtn.addEventListener("click", async () => {
+
+    if (!isRecording) {
+        // Start Recording
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+
+        audioChunks = [];
+        mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+
+        mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+            sendAudioToBackend(audioBlob);
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        voiceBtn.innerHTML = "🎙 Recording...";
+        statusText.innerHTML = "Listening...";
+    } else {
+        // Stop recording
+        mediaRecorder.stop();
+        isRecording = false;
+        voiceBtn.innerHTML = "🎤";
+        statusText.innerHTML = "Processing...";
+    }
+});
+
+
+// ---------------- SEND AUDIO → BACKEND (STT) ----------------
+
+async function sendAudioToBackend(blob) {
+    try {
+        const formData = new FormData();
+        formData.append("audio", blob, "audio.webm");
+
+        const sttResponse = await fetch("http://127.0.0.1:8000/api/voice/stt", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await sttResponse.json();
+        const userText = data.text;
+
+        addUserMessage(userText);
+        sendTextToChat(userText);  // send to chatbot
+
+    } catch (e) {
+        console.error(e);
+        statusText.innerHTML = "Error!";
+    }
+}
+
+
+// ---------------- TEXT → CHATBOT ----------------
+
+async function sendTextToChat(text) {
+    const res = await fetch("http://127.0.0.1:8000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+    });
+
+    const result = await res.json();
+    const botReply = result.reply;
+
+    addBotMessage(botReply);
+
+    // Convert reply to voice
+    playVoice(botReply);
+}
+
+
+// ---------------- AI REPLY → VOICE (TTS) ----------------
+
+async function playVoice(text) {
+    const tts = await fetch("http://127.0.0.1:8000/api/voice/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(text)
+    });
+
+    const audioBlob = await tts.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    const audio = new Audio(audioUrl);
+    audio.play();
+}
+
+
+// ---------------- Chat UI Update ----------------
+
+function addUserMessage(txt) {
+    chatHistory.innerHTML += `<div class="msg user">${txt}</div>`;
+}
+
+function addBotMessage(txt) {
+    chatHistory.innerHTML += `<div class="msg bot">${txt}</div>`;
+}
+</script>
+
+
+
+</body>
+</html>

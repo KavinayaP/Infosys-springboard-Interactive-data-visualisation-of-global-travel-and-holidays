@@ -1,0 +1,332 @@
+[
+  {
+    "id": 1,
+    "title": "Top Summer Destinations Loved by Indian Travelers",
+    "country": "UAE",
+    "image": "images/dubai.jpg",
+    "tags": ["summer", "family", "short-trip", "budget"],
+    "summary": "Dubai remains the top summer choice for Indians due to short flights, many attractions, and high safety.",
+    "points": [
+      "Short 3–4 hour flight from India",
+      "Best for families and kids",
+      "Great summer deals in May–June"
+    ],
+    "chart": {
+      "labels": ["Flight", "Stay", "Food"],
+      "data": [40, 35, 25]
+    }
+  },
+  {
+    "id": 2,
+    "title": "Best Budget-Friendly Destinations for Students",
+    "country": "Thailand",
+    "image": "images/thailand.jpg",
+    "tags": ["budget", "students", "adventure", "food"],
+    "summary": "Thailand is the cheapest and most exciting place for students, with low-cost hostels and adventure activities.",
+    "points": [
+      "Hostels for ₹500 – ₹900",
+      "Street food for ₹80 – ₹150",
+      "Cheap island tours"
+    ],
+    "chart": {
+      "labels": ["Flight", "Stay", "Food"],
+      "data": [45, 30, 25]
+    }
+  },
+  {
+    "id": 3,
+    "title": "Most Family-Friendly Destinations in Asia (2024)",
+    "country": "Singapore",
+    "image": "images/singapore.jpg",
+    "tags": ["family", "clean", "safe", "luxury"],
+    "summary": "Singapore is Asia’s safest and cleanest family destination with world-class attractions.",
+    "points": [
+      "Very safe for kids",
+      "Top spots: Universal Studios, Night Safari",
+      "Clean city with great transport"
+    ],
+    "chart": {
+      "labels": ["Safety", "Cleanliness", "Transport"],
+      "data": [90, 92, 88]
+    }
+  },
+  {
+    "id": 4,
+    "title": "Top Countries for Solo Female Travelers (2024)",
+    "country": "Japan",
+    "image": "images/japan.jpg",
+    "tags": ["solo", "female-safety", "clean", "culture"],
+    "summary": "Japan leads in solo female travel safety due to helpful locals and low crime.",
+    "points": [
+      "Ranked #1 in women's safety",
+      "Night travel is safe",
+      "Very polite culture"
+    ],
+    "chart": {
+      "labels": ["Night Safety", "Transport Safety", "Helpfulness"],
+      "data": [95, 93, 89]
+    }
+  },
+  {
+    "id": 5,
+    "title": "Best Islands for Budget Luxury Travel",
+    "country": "Maldives",
+    "image": "images/maldives.jpg",
+    "tags": ["island", "luxury", "couples", "budget"],
+    "summary": "Maldives now offers budget-luxury options like guesthouses and local island villas.",
+    "points": [
+      "Affordable water villas off-season",
+      "Stunning clear water beaches",
+      "Budget-friendly food options"
+    ],
+    "chart": {
+      "labels": ["Luxury", "Budget", "Photography"],
+      "data": [85, 60, 90]
+    }
+  },
+
+
+
+  {
+    "id": 6,
+    "title": "Cheapest International Destinations Under ₹40,000",
+    "country": "Vietnam",
+    "image": "images/vietnam.jpg",
+    "tags": ["budget", "cheap-flights", "food", "solo"],
+    "summary": "Vietnam is extremely affordable with food, travel, and stay cheaper than most Asian countries.",
+    "points": [
+      "Return flights starting ₹20,000",
+      "Street food ₹100 – ₹200",
+      "Best for budget solo travelers"
+    ],
+    "chart": {
+      "labels": ["Food", "Stay", "Transport"],
+      "data": [20, 30, 25]
+    }
+  },
+
+
+
+  {
+    "id": 7,
+    "title": "Top Instagram Trending Travel Spots (2024)",
+    "country": "Bali",
+    "image": "images/bali.jpg",
+    "tags": ["trend", "instagram", "nature", "adventure"],
+    "summary": "Bali is trending worldwide because of its beaches, waterfalls, and yoga retreats.",
+    "points": [
+      "Most Instagrammable island",
+      "Great beaches & swings",
+      "Affordable stays"
+    ],
+    "chart": {
+      "labels": ["Beaches", "Nature", "Culture"],
+      "data": [90, 85, 80]
+    }
+  },
+  {
+    "id": 8,
+    "title": "Most Visited Countries by Indians in 2024",
+    "country": "UAE",
+    "image": "images/uae.jpg",
+    "tags": ["trend", "travel-data", "summer", "family"],
+    "summary": "UAE continues to lead Indian travel lists with Dubai and Abu Dhabi topping charts.",
+    "points": [
+      "Short travel time",
+      "Great shopping",
+      "Year-round tourism"
+    ],
+    "chart": {
+      "labels": ["Indians Visiting", "Tourist Spots", "Shopping Popularity"],
+      "data": [95, 90, 92]
+    }
+  },
+
+
+  {
+    "id": 9,
+    "title": "Best Adventure Countries for Thrill Seekers",
+    "country": "New Zealand",
+    "image": "images/newzealand.jpg",
+    "tags": ["adventure", "nature", "hiking", "sports"],
+    "summary": "New Zealand is heaven for adventure lovers with bungee, skydiving, and mountain trails.",
+    "points": [
+      "Best for bungee & skydiving",
+      "World-class trekking spots",
+      "Clean natural views"
+    ],
+    "chart": {
+      "labels": ["Adventure", "Nature", "Safety"],
+      "data": [95, 98, 90]
+    }
+  },
+  {
+    "id": 10,
+    "title": "Best Countries for Water Sports Lovers",
+    "country": "Philippines",
+    "image": "images/philippines.jpg",
+    "tags": ["adventure", "water", "island", "solo"],
+    "summary": "Philippines is perfect for scuba diving, blue water lagoons and water adventure lovers.",
+    "points": [
+      "Blue lagoons and beaches",
+      "Best scuba spots",
+      "Budget-friendly stays"
+    ],
+    "chart": {
+      "labels": ["Beaches", "Water Sports", "Budget"],
+      "data": [95, 90, 75]
+    }
+  },
+
+
+
+  {
+    "id": 11,
+    "title": "Safest Cities for Family Vacations",
+    "country": "Canada",
+    "image": "images/canada.jpg",
+    "tags": ["family", "safety", "clean", "nature"],
+    "summary": "Canada ranks high in safety, cleanliness, education and family-friendliness.",
+    "points": [
+      "Very safe cities",
+      "Clean streets",
+      "Great parks and attractions"
+    ],
+    "chart": {
+      "labels": ["Safety", "Cleanliness", "Family-Friendliness"],
+      "data": [93, 90, 88]
+    }
+  },
+
+
+  {
+    "id": 12,
+    "title": "Top Luxury Honeymoon Destinations",
+    "country": "Switzerland",
+    "image": "images/switzerland.jpg",
+    "tags": ["luxury", "couples", "nature", "premium"],
+    "summary": "Switzerland is known for premium romantic experiences, lakes, chocolate, and scenic views.",
+    "points": [
+      "Romantic lakes",
+      "Premium resorts",
+      "Snow mountain views"
+    ],
+    "chart": {
+      "labels": ["Luxury", "Nature", "Romance"],
+      "data": [90, 85, 95]
+    }
+  },
+
+
+  {
+    "id": 13,
+    "title": "Best Winter Destinations in the World",
+    "country": "Finland",
+    "image": "images/finland.jpg",
+    "tags": ["winter", "snow", "family", "nature"],
+    "summary": "Finland offers snow, Northern Lights and magical winter experiences.",
+    "points": [
+      "Northern Lights",
+      "Snow hotels",
+      "Winter adventure"
+    ],
+    "chart": {
+      "labels": ["Snow", "Safety", "Scenery"],
+      "data": [98, 88, 95]
+    }
+  },
+
+
+
+  {
+    "id": 14,
+    "title": "Safest Countries to Travel in 2024",
+    "country": "Iceland",
+    "image": "images/iceland.jpg",
+    "tags": ["safety", "solo", "female-safety", "nature"],
+    "summary": "Iceland ranks #1 in global peace index and is extremely safe for solo travelers.",
+    "points": [
+      "Very low crime rate",
+      "Peaceful environment",
+      "Great for solo travelers"
+    ],
+    "chart": {
+      "labels": ["Peace Index", "Night Safety", "Solo Safety"],
+      "data": [98, 95, 96]
+    }
+  },
+  {
+    "id": 15,
+    "title": "Top Countries with Low Scam Risk",
+    "country": "Denmark",
+    "image": "images/denmark.jpg",
+    "tags": ["safety", "solo", "clean", "premium"],
+    "summary": "Denmark has very low scam incidents, making it ideal for first-time international travelers.",
+    "points": [
+      "Very low scam rate",
+      "Safe public transport",
+      "Good for first-time travelers"
+    ],
+    "chart": {
+      "labels": ["Scam Risk", "Transport", "Tourist Safety"],
+      "data": [90, 85, 92]
+    }
+  },
+
+
+
+  {
+    "id": 16,
+    "title": "Best Places to Celebrate New Year",
+    "country": "Australia",
+    "image": "images/australia.jpg",
+    "tags": ["festival", "events", "music", "trend"],
+    "summary": "Australia offers world-famous fireworks, nightlife and coastal celebrations.",
+    "points": [
+      "Sydney fireworks",
+      "Coastal nightlife",
+      "Best for December travel"
+    ],
+    "chart": {
+      "labels": ["Events", "Nightlife", "Crowd"],
+      "data": [90, 89, 80]
+    }
+  },
+  {
+    "id": 17,
+    "title": "Best Cherry Blossom Destinations",
+    "country": "Japan",
+    "image": "images/cherry.jpg",
+    "tags": ["season", "spring", "nature", "trend"],
+    "summary": "Japan’s cherry blossom season attracts millions with its magical pink scenery.",
+    "points": [
+      "Best months: March–April",
+      "Romantic views",
+      "Popular with families"
+    ],
+    "chart": {
+      "labels": ["Spring Beauty", "Crowd", "Photography"],
+      "data": [95, 85, 98]
+    }
+  },
+
+
+
+  {
+    "id": 18,
+    "title": "Best Countries for Food Lovers",
+    "country": "Italy",
+    "image": "images/italy.jpg",
+    "tags": ["food", "culture", "family", "luxury"],
+    "summary": "Italy is heaven for food lovers with pasta, pizza, gelato, and premium dining experiences.",
+    "points": [
+      "Best pasta & pizza",
+      "Street food available",
+      "Great for families"
+    ],
+    "chart": {
+      "labels": ["Taste", "Affordability", "Variety"],
+      "data": [95, 70, 90]
+    }
+  }
+]

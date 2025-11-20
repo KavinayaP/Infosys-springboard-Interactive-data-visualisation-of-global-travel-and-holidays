@@ -1,0 +1,198 @@
+/* Font setup */
+* {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Navbar */
+.navbar {
+    background: #020b1a;
+    padding: 15px 40px;
+    display: flex;
+    gap: 25px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.navbar a:hover,
+.navbar .active {
+    color: #00c3ff;
+}
+
+/* Hero section */
+.hero {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #001429, #003366);
+    color: white;
+}
+
+.hero h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* Search bar */
+#search {
+    margin-top: 20px;
+    padding: 10px 20px;
+    width: 70%;
+    max-width: 500px;
+    border-radius: 30px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+}
+
+/* Tags */
+#tagsContainer {
+    margin-top: 20px;
+}
+
+#tagsContainer button {
+    padding: 8px 15px;
+    background: #00c3ff;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    margin: 5px;
+    color: black;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#tagsContainer button:hover {
+    background: white;
+}
+
+/* Grid layout */
+.stories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    padding: 40px;
+}
+
+@media (max-width: 900px) {
+    .stories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .stories-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+/* Story Card */
+.card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    transition: 0.35s ease;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+}
+
+/* Card image */
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+/* Card content */
+.card h3 {
+    padding: 15px;
+    font-size: 18px;
+}
+
+.card p {
+    padding: 0 15px;
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+/* Tags in card */
+.tags span {
+    margin: 0 5px;
+    padding: 5px 10px;
+    background: #eef6fa;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #003366;
+}
+
+/* Read More button */
+.read-more {
+    background: #003366;
+    color: white;
+    margin: 15px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.read-more:hover {
+    background: #005599;
+}
+
+/* MODAL */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    width: 80%;
+    max-width: 700px;
+    padding: 25px;
+    border-radius: 15px;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#storyChart {
+    margin-top: 20px;
+}

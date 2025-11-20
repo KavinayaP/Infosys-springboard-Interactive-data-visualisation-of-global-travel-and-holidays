@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboards — Global T ravel Insights</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-dark: #021029;
+      --glass: rgba(255,255,255,0.06);
+      --accent1: #06b6d4; /* cyan */
+      --accent2: #7c3aed; /* purple */
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg,#021029 0%, #042f4a 100%);
+      color: #e6eef8;
+      -webkit-font-smoothing:antialiased;
+    }
+    .glass {
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
+    }
+    .card-hover { transition: transform .25s, box-shadow .25s; }
+    .card-hover:hover { transform: translateY(-6px); box-shadow: 0 30px 50px rgba(0,0,0,0.45); }
+
+    /* star rating */
+    .star { font-size: 1.2rem; cursor: pointer; transition: transform .12s; }
+    .star:hover { transform: scale(1.12); }
+
+    /* emoji */
+    .emoji-btn { font-size: 1.45rem; cursor: pointer; padding: .25rem; border-radius: .5rem; transition: transform .12s; }
+    .emoji-btn:hover { transform: translateY(-4px); }
+
+    /* slider label */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent1);
+      box-shadow: 0 4px 12px rgba(6,182,212,0.28);
+    }
+
+    /* small review image preview */
+    .thumb { width: 56px; height: 40px; object-fit: cover; border-radius: 6px; border:1px solid rgba(255,255,255,0.06); }
+
+    /* chat panel small */
+    #chatPanel { width:360px; max-width:92vw; transform: translateY(20px) scale(.96); opacity:0; transition: .28s ease; }
+    #chatPanel.open { transform: translateY(0) scale(1); opacity:1; }
+
+    @media (max-width:768px) {
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-50 bg-[#021021]/60 backdrop-blur">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-blue-600 flex items-center justify-center text-white font-bold shadow">GT</div>
+      <span class="font-extrabold text-white text-xl">Global Travel Insights</span>
+    </a>
+
+    <ul class="hidden md:flex items-center gap-4 text-white">
+      <li><a href="index.html" class="hover:underline">Home</a></li>
+      <li><a href="dashboards.html" class="underline">Dashboards</a></li>
+      <li><a href="insights.html" class="hover:underline">Insights</a></li>
+      <li><a href="feedback.html" class="hover:underline">Feedback</a></li>
+
+      <li id="navLogin"><a href="login.html" class="px-3 py-2 bg-white/20 rounded">Login</a></li>
+      <li id="navCreate"><a href="register.html" class="px-3 py-2 bg-white/20 rounded">Create</a></li>
+
+      <li id="navNotifications" style="display:none;"><a href="notifications.html">Notifications</a></li>
+      <li id="navQuiz" style="display:none;"><a href="quiz.html">Quiz</a></li>
+      <li id="navProfile" style="display:none;"><a href="profile.html" class="px-3 py-2 bg-white text-blue-800 rounded">Profile</a></li>
+      <li id="navLogout" style="display:none;"><button class="px-3 py-2 bg-red-600 rounded">Logout</button></li>
+    </ul>
+
+    <div class="md:hidden">
+      <button id="mobileToggle" class="text-white text-2xl">☰</button>
+    </div>
+  </div>
+
+  <div id="mobileMenu" class="hidden bg-white/5 p-4 md:hidden">
+    <a href="index.html" class="block py-2 text-white">Home</a>
+    <a href="dashboards.html" class="block py-2 text-white">Dashboards</a>
+    <a href="insights.html" class="block py-2 text-white">Insights</a>
+    <a href="feedback.html" class="block py-2 text-white">Feedback</a>
+    <a id="mLogin" href="login.html" class="block py-2 text-white">Login</a>
+    <a id="mCreate" href="register.html" class="block py-2 text-white">Create</a>
+    <a id="mProfile" href="profile.html" class="block py-2 text-white" style="display:none;">Profile</a>
+    <button id="mLogout" class="block w-full text-left py-2 text-white bg-red-600 rounded mt-2" style="display:none;">Logout</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="max-w-6xl mx-auto px-4 py-10">
+
+  <header class="mb-6">
+    <h1 class="text-3xl font-extrabold" data-aos="fade-down">Dashboards — Deep Dive</h1>
+    <p class="text-slate-300 mt-2" data-aos="fade-up">View each dashboard, see explanations, insights and rate how useful each dashboard is. Ratings & reviews are saved in your browser for demo.</p>
+  </header>
+
+  <!-- OVERVIEW HIGHLIGHTS -->
+  <section class="grid md:grid-cols-3 gap-4 mb-8">
+    <div class="glass p-4 rounded-lg card-hover" data-aos="fade-up">
+      <div class="text-xs text-slate-300">Total Travelers (demo)</div>
+      <div class="metric text-2xl font-bold" data-target="399000000000">0</div>
+      <div class="text-xs text-slate-400">Global cumulative (sample)</div>
+    </div>
+    <div class="glass p-4 rounded-lg card-hover" data-aos="fade-up" data-aos-delay="100">
+      <div class="text-xs text-slate-300">Total Spending (demo)</div>
+      <div class="metric text-2xl font-bold" data-target="171450000000000">0</div>
+      <div class="text-xs text-slate-400">USD (sample)</div>
+    </div>
+    <div class="glass p-4 rounded-lg card-hover" data-aos="fade-up" data-aos-delay="200">
+      <div class="text-xs text-slate-300">Avg Travelers / year</div>
+      <div class="metric text-2xl font-bold" data-target="1500000000">0</div>
+      <div class="text-xs text-slate-400">Annual (sample)</div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD BLOCKS -->
+  <section class="space-y-8">
+
+    <!-- ============ DASH 1: Destination Popularity ============ -->
+    <article class="glass rounded-2xl p-6 card-hover" data-aos="fade-up">
+      <div class="md:flex md:items-start md:gap-6">
+        <!-- left: embed -->
+        <div class="md:flex-1">
+          <h2 class="text-xl font-bold text-cyan-300">1 • Destination Popularity</h2>
+          <p class="text-slate-300 mt-1">Heatmaps and ranking of top destinations (by arrivals & spend) — see which countries & regions are trending.</p>
+
+          <div class="mt-4 rounded-xl overflow-hidden border border-white/6 shadow">
+            <!-- Replace src with your real Power BI embed link -->
+            <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNTc0YTI2NTAtYTM1Ni00OGRmLTkxMGItYmExNzM2OWMwZjRhIiwidCI6ImRmNWI0OWE4LWFmMGYtNDkxYi05ZGQ4LWUzNWU4MjYxMDI2ZiJ9" class="w-full h-64 md:h-80 bg-[#0002]" title="Destination Popularity Dashboard"></iframe>
+          </div>
+        </div>
+
+        <!-- right: details & rating -->
+        <div class="md:w-[360px] mt-6 md:mt-0">
+          <!-- Data highlights -->
+          <div class="glass p-4 rounded-lg mb-4">
+            <div class="text-xs text-slate-300">Quick Insights</div>
+            <ul class="mt-2 text-sm text-slate-200 space-y-1">
+              <li>• Top countries (sample): USA, UK, Australia, Samoa.</li>
+              <li>• Purpose split: Leisure ~72%, Business ~18%, Others ~10%.</li>
+              <li>• Heatmap hotspots: Southeast Asia & Europe showing strongest recovery.</li>
+            </ul>
+          </div>
+
+          <!-- insights card -->
+          <div class="glass p-4 rounded-lg mb-4">
+            <div class="text-xs text-slate-300">Key Insight</div>
+            <div class="font-semibold mt-1 text-slate-200">Leisure travel is recovering faster — marketers should prioritise holiday promotions in Q4.</div>
+          </div>
+
+          <!-- RATING PANEL -->
+          <div class="glass p-4 rounded-lg mb-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs text-slate-300">Rate this dashboard</div>
+                <div class="mt-2 flex items-center gap-2">
+                  <!-- Stars -->
+                  <div id="stars_dash1" class="flex gap-1"></div>
+                  <div id="avg_dash1" class="text-xs text-slate-300 ml-2">—</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- emoji row -->
+            <div class="mt-3 flex items-center gap-2">
+              <button class="emoji-btn" data-dash="dash1" data-emoji="1">😡</button>
+              <button class="emoji-btn" data-dash="dash1" data-emoji="2">😕</button>
+              <button class="emoji-btn" data-dash="dash1" data-emoji="3">🙂</button>
+              <button class="emoji-btn" data-dash="dash1" data-emoji="4">😊</button>
+              <button class="emoji-btn" data-dash="dash1" data-emoji="5">🤩</button>
+            </div>
+
+            <!-- slider -->
+            <div class="mt-3">
+              <label class="text-xs text-slate-300">Score (0 - 10)</label>
+              <input id="slider_dash1" type="range" min="0" max="10" value="8" class="w-full mt-2">
+              <div class="text-xs text-slate-300 mt-1">Score: <span id="sliderVal_dash1">8</span>/10</div>
+            </div>
+
+            <!-- comment + upload -->
+            <div class="mt-3">
+              <textarea id="comment_dash1" rows="3" class="w-full mt-2 p-2 rounded bg-white/5 text-slate-200" placeholder="Write a short feedback (optional)"></textarea>
+              <div class="flex items-center gap-2 mt-2">
+                <input id="file_dash1" type="file" accept="image/*" class="hidden">
+                <button id="choose_dash1" class="px-3 py-1 bg-white/6 rounded text-slate-100">Upload screenshot</button>
+                <div id="preview_dash1" class="ml-auto"></div>
+              </div>
+
+              <div class="mt-3 flex gap-2">
+                <button id="submit_dash1" class="px-4 py-2 bg-gradient-to-r from-teal-400 to-blue-600 rounded text-white">Submit Feedback</button>
+                <button id="clear_dash1" class="px-4 py-2 bg-white/6 rounded text-white">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- reviews list -->
+          <div class="glass p-3 rounded-lg">
+            <div class="text-xs text-slate-300">User Reviews</div>
+            <div id="reviews_dash1" class="mt-3 max-h-36 overflow-auto text-sm space-y-3"></div>
+            <div id="noReviews_dash1" class="text-xs text-slate-400 mt-2">No reviews yet — be the first!</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============ DASH 2: Travel Statistics ============ -->
+    <article class="glass rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="120">
+      <div class="md:flex md:items-start md:gap-6">
+        <div class="md:flex-1">
+          <h2 class="text-xl font-bold text-teal-300">2 • Travel Statistics</h2>
+          <p class="text-slate-300 mt-1">Inbound/outbound flows, receipts, airport & port metrics, and monthly time-series for arrivals and departures.</p>
+
+          <div class="mt-4 rounded-xl overflow-hidden border border-white/6 shadow">
+            <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNTc0YTI2NTAtYTM1Ni00OGRmLTkxMGItYmExNzM2OWMwZjRhIiwidCI6ImRmNWI0OWE4LWFmMGYtNDkxYi05ZGQ4LWUzNWU4MjYxMDI2ZiJ9" class="w-full h-64 md:h-80 bg-[#0002]" title="Travel Statistics Dashboard"></iframe>
+          </div>
+        </div>
+
+        <div class="md:w-[360px] mt-6 md:mt-0">
+          <div class="glass p-4 rounded-lg mb-4">
+            <div class="text-xs text-slate-300">Quick Insights</div>
+            <ul class="mt-2 text-sm text-slate-200 space-y-1">
+              <li>• Month-over-month arrivals show steady +6% growth in region X.</li>
+              <li>• Port bottlenecks visible in June (peak departures).</li>
+              <li>• Receipts concentrated in top 10 economies — monitor currency impact.</li>
+            </ul>
+          </div>
+
+          <div class="glass p-4 rounded-lg mb-4">
+            <div class="text-xs text-slate-300">Key Insight</div>
+            <div class="font-semibold mt-1 text-slate-200">Increase capacity planning for ports with rising departures; shift marketing to underperforming regions.</div>
+          </div>
+
+          <div class="glass p-4 rounded-lg mb-3">
+            <div class="text-xs text-slate-300">Rate this dashboard</div>
+            <div class="mt-2 flex items-center gap-2">
+              <div id="stars_dash2" class="flex gap-1"></div>
+              <div id="avg_dash2" class="text-xs text-slate-300 ml-2">—</div>
+            </div>
+
+            <div class="mt-3 flex items-center gap-2">
+              <button class="emoji-btn" data-dash="dash2" data-emoji="1">😡</button>
+              <button class="emoji-btn" data-dash="dash2" data-emoji="2">😕</button>
+              <button class="emoji-btn" data-dash="dash2" data-emoji="3">🙂</button>
+              <button class="emoji-btn" data-dash="dash2" data-emoji="4">😊</button>
+              <button class="emoji-btn" data-dash="dash2" data-emoji="5">🤩</button>
+            </div>
+
+            <div class="mt-3">
+              <label class="text-xs text-slate-300">Score</label>
+              <input id="slider_dash2" type="range" min="0" max="10" value="7" class="w-full mt-2">
+              <div class="text-xs text-slate-300 mt-1">Score: <span id="sliderVal_dash2">7</span>/10</div>
+            </div>
+
+            <div class="mt-3">
+              <textarea id="comment_dash2" rows="3" class="w-full mt-2 p-2 rounded bg-white/5 text-slate-200" placeholder="Short feedback"></textarea>
+              <div class="flex items-center gap-2 mt-2">
+                <input id="file_dash2" type="file" accept="image/*" class="hidden">
+                <button id="choose_dash2" class="px-3 py-1 bg-white/6 rounded text-slate-100">Upload screenshot</button>
+                <div id="preview_dash2" class="ml-auto"></div>
+              </div>
+
+              <div class="mt-3 flex gap-2">
+                <button id="submit_dash2" class="px-4 py-2 bg-gradient-to-r from-teal-400 to-blue-600 rounded text-white">Submit Feedback</button>
+                <button id="clear_dash2" class="px-4 py-2 bg-white/6 rounded text-white">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass p-3 rounded-lg">
+            <div class="text-xs text-slate-300">User Reviews</div>
+            <div id="reviews_dash2" class="mt-3 max-h-36 overflow-auto text-sm space-y-3"></div>
+            <div id="noReviews_dash2" class="text-xs text-slate-400 mt-2">No reviews yet — be the first!</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============ DASH 3: Recovery & Impact ============ -->
+    <article class="glass rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="240">
+      <div class="md:flex md:items-start md:gap-6">
+        <div class="md:flex-1">
+          <h2 class="text-xl font-bold text-lime-300">3 • Recovery & Holiday Impact</h2>
+          <p class="text-slate-300 mt-1">Recovery indices, monthwise comparisons, economic impact during holiday seasons — helps forecast demand and budget.</p>
+
+          <div class="mt-4 rounded-xl overflow-hidden border border-white/6 shadow">
+            <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNTc0YTI2NTAtYTM1Ni00OGRmLTkxMGItYmExNzM2OWMwZjRhIiwidCI6ImRmNWI0OWE4LWFmMGYtNDkxYi05ZGQ4LWUzNWU4MjYxMDI2ZiJ9" class="w-full h-64 md:h-80 bg-[#0002]" title="Recovery & Impact Dashboard"></iframe>
+          </div>
+        </div>
+
+        <div class="md:w-[360px] mt-6 md:mt-0">
+          <div class="glass p-4 rounded-lg mb-4">
+            <div class="text-xs text-slate-300">Quick Insights</div>
+            <ul class="mt-2 text-sm text-slate-200 space-y-1">
+              <li>• Recovery index shows region-specific variation — monitor countries with < 60% recovery.</li>
+              <li>• Holiday impact: December & April show highest spending uplift.</li>
+              <li>• Forecast models: scenario A (optimistic) vs B (conservative) included.</li>
+            </ul>
+          </div>
+
+          <div class="glass p-4 rounded-lg mb-4">
+            <div class="text-xs text-slate-300">Key Insight</div>
+            <div class="font-semibold mt-1 text-slate-200">Use targeted promotions in countries with slower recovery to boost volume — focus on price incentives during off-peak months.</div>
+          </div>
+
+          <div class="glass p-4 rounded-lg mb-3">
+            <div class="text-xs text-slate-300">Rate this dashboard</div>
+            <div class="mt-2 flex items-center gap-2">
+              <div id="stars_dash3" class="flex gap-1"></div>
+              <div id="avg_dash3" class="text-xs text-slate-300 ml-2">—</div>
+            </div>
+
+            <div class="mt-3 flex items-center gap-2">
+              <button class="emoji-btn" data-dash="dash3" data-emoji="1">😡</button>
+              <button class="emoji-btn" data-dash="dash3" data-emoji="2">😕</button>
+              <button class="emoji-btn" data-dash="dash3" data-emoji="3">🙂</button>
+              <button class="emoji-btn" data-dash="dash3" data-emoji="4">😊</button>
+              <button class="emoji-btn" data-dash="dash3" data-emoji="5">🤩</button>
+            </div>
+
+            <div class="mt-3">
+              <label class="text-xs text-slate-300">Score</label>
+              <input id="slider_dash3" type="range" min="0" max="10" value="9" class="w-full mt-2">
+              <div class="text-xs text-slate-300 mt-1">Score: <span id="sliderVal_dash3">9</span>/10</div>
+            </div>
+
+            <div class="mt-3">
+              <textarea id="comment_dash3" rows="3" class="w-full mt-2 p-2 rounded bg-white/5 text-slate-200" placeholder="Short feedback"></textarea>
+              <div class="flex items-center gap-2 mt-2">
+                <input id="file_dash3" type="file" accept="image/*" class="hidden">
+                <button id="choose_dash3" class="px-3 py-1 bg-white/6 rounded text-slate-100">Upload screenshot</button>
+                <div id="preview_dash3" class="ml-auto"></div>
+              </div>
+
+              <div class="mt-3 flex gap-2">
+                <button id="submit_dash3" class="px-4 py-2 bg-gradient-to-r from-teal-400 to-blue-600 rounded text-white">Submit Feedback</button>
+                <button id="clear_dash3" class="px-4 py-2 bg-white/6 rounded text-white">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass p-3 rounded-lg">
+            <div class="text-xs text-slate-300">User Reviews</div>
+            <div id="reviews_dash3" class="mt-3 max-h-36 overflow-auto text-sm space-y-3"></div>
+            <div id="noReviews_dash3" class="text-xs text-slate-400 mt-2">No reviews yet — be the first!</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<!-- Floating Chat/Voice Assistant Button -->
+<div id="chatBtn" class="fixed right-6 bottom-6 z-50">
+  <button id="openChat" class="bg-gradient-to-br from-teal-400 to-blue-600 p-3 rounded-full shadow-lg text-white transform hover:scale-110 transition mic-pulse">💬</button>
+</div>
+
+<!-- Chat Panel (same as index) -->
+<div id="chatPanel" class="hidden fixed right-6 bottom-28 bg-white rounded-2xl shadow-2xl z-60" style="width:360px; max-width:92vw;">
+  <div class="p-3 flex items-center justify-between border-b">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-blue-600 flex items-center justify-center text-white font-bold">AI</div>
+      <div>
+        <div class="font-semibold">Assistant</div>
+        <div class="text-xs text-slate-500">Ask anything — voice or type</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="micBtn" class="px-3 py-1 rounded-full bg-teal-400 text-white shadow">🎤</button>
+      <button id="closeChat" class="text-slate-500">✕</button>
+    </div>
+  </div>
+
+  <div id="chatHistory" class="p-4 h-64 overflow-y-auto bg-white/40"></div>
+  <div id="typingIndicator" class="px-4 pb-2 hidden text-slate-600"><span class="typing"></span><span class="typing"></span><span class="typing"></span> Assistant is typing...</div>
+  <div id="recordIndicator" class="px-4 pb-2 hidden text-red-600 font-medium text-center">🎙 Listening...</div>
+
+  <form id="chatForm" class="flex items-center gap-2 p-3 border-t border-white/6 bg-white/30">
+    <input id="chatInput" class="flex-1 bg-transparent border border-white/6 rounded px-3 py-2 text-slate-900" placeholder="Try: 'Top destinations 2024'">
+    <button class="px-4 py-2 rounded bg-gradient-to-br from-teal-400 to-blue-600 text-white">Send</button>
+  </form>
+</div>
+
+<!-- Footer -->
+<footer class="text-center text-slate-300 py-6">© Global Travel Insights — Demo</footer>
+
+<!-- SCRIPTS -->
+<script>
+  AOS.init({ duration: 800, once: true });
+
+  // ---------- NAV AUTH ----------
+  function setupAuthNav(){
+    const loggedIn = localStorage.getItem("loggedIn")==="true";
+    const show = (id, on) => { const el = document.getElementById(id); if(!el) return; el.style.display = on ? "" : "none"; };
+    show("navLogin", !loggedIn); show("navCreate", !loggedIn);
+    show("navNotifications", loggedIn); show("navQuiz", loggedIn); show("navProfile", loggedIn); show("navLogout", loggedIn);
+    show("mLogin", !loggedIn); show("mCreate", !loggedIn);
+    show("mNavProfile", loggedIn); show("mNavLogout", loggedIn);
+
+    const logout = document.getElementById("navLogout");
+    if(logout) logout.onclick = ()=>{ localStorage.setItem("loggedIn","false"); window.location.href='login.html'; };
+  }
+  setupAuthNav();
+
+  // mobile toggle
+  document.getElementById('mobileToggle')?.addEventListener('click', ()=> document.getElementById('mobileMenu').classList.toggle('hidden'));
+
+  // ---------- COUNTERS ----------
+  function formatNumber(n){
+    if (n >= 1e12) return (n/1e12).toFixed(2) + 'T';
+    if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    return n.toLocaleString();
+  }
+  function animateMetrics(){
+    document.querySelectorAll('[data-target]').forEach(el=>{
+      const target = +el.getAttribute('data-target');
+      let cur = 0; const step = Math.max(1, Math.floor(target/220));
+      const tick = ()=>{ cur += step; if(cur < target){ el.innerText = formatNumber(cur); requestAnimationFrame(tick);} else el.innerText = formatNumber(target); };
+      tick();
+    });
+  }
+  window.addEventListener('load', ()=> setTimeout(animateMetrics, 500));
+
+  // ---------- RATINGS & REVIEWS STORAGE LOGIC ----------
+  // We'll store data in localStorage key: gti_reviews (object keyed by dashboard id)
+  const STORAGE_KEY = 'gti_reviews_v1';
+
+  function loadAllReviews(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e){ return {}; }
+  }
+  function saveAllReviews(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
+
+  // utility: render stars control and average
+  function initStars(dashId, containerId, avgId){
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    for(let i=1;i<=5;i++){
+      const span = document.createElement('span');
+      span.className = 'star text-yellow-400';
+      span.innerHTML = '☆';
+      span.dataset.value = i;
+      span.onclick = ()=> { addRating(dashId, i, null, null, null, null); };
+      span.onmouseenter = ()=> { // preview
+        container.querySelectorAll('.star').forEach(s => s.innerHTML = '☆');
+        for(let j=0;j<i;j++) container.querySelectorAll('.star')[j].innerHTML = '★';
+      };
+      span.onmouseleave = ()=> { renderAverageStars(dashId, containerId, avgId); };
+      container.appendChild(span);
+    }
+    renderAverageStars(dashId, containerId, avgId);
+  }
+
+  function renderAverageStars(dashId, containerId, avgId){
+    const all = loadAllReviews();
+    const list = all[dashId] || [];
+    const avg = list.length ? (list.reduce((s,r)=>s+(r.star||0),0)/list.length) : 0;
+    const avgText = list.length ? (avg.toFixed(2) + ' / 5 ('+list.length+' reviews)') : 'No ratings';
+    document.getElementById(avgId).innerText = avgText;
+    const container = document.getElementById(containerId);
+    if(!container) return;
+    container.querySelectorAll('.star').forEach((s, idx)=>{
+      const v = idx+1;
+      if(avg >= v - 0.25) s.innerHTML = '★'; else s.innerHTML = '☆';
+    });
+  }
+
+  // add rating: dashId, star (1-5), emoji (1-5), score (0-10), comment text, screenshot (dataURL)
+  function addRating(dashId, star, emoji, score, comment, screenshot){
+    const all = loadAllReviews();
+    if(!all[dashId]) all[dashId] = [];
+    const entry = {
+      star: star || null,
+      emoji: emoji || null,
+      score: typeof score === 'number' ? score : null,
+      comment: comment || '',
+      screenshot: screenshot || null,
+      user: JSON.parse(localStorage.getItem('gti_current_user') || '{}').email || 'guest',
+      ts: new Date().toISOString()
+    };
+    all[dashId].unshift(entry); // newest first
+    saveAllReviews(all);
+    renderReviewsFor(dashId);
+    renderAverageStars(dashId, 'stars_'+dashId, 'avg_'+dashId); // also update generic ids if used
+  }
+
+  // generic render function — maps element ids of each dash
+  function renderReviewsFor(dashId){
+    const all = loadAllReviews();
+    const list = all[dashId] || [];
+    const reviewsEl = document.getElementById('reviews_'+dashId);
+    const noEl = document.getElementById('noReviews_'+dashId);
+    if(!reviewsEl) return;
+    reviewsEl.innerHTML = '';
+    if(list.length === 0){ if(noEl) noEl.style.display='block'; return; } else { if(noEl) noEl.style.display='none'; }
+    list.forEach(r => {
+      const d = document.createElement('div');
+      d.className = 'p-2 bg-white/5 rounded';
+      d.innerHTML = `<div class="flex items-start gap-3">
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-semibold text-white">${r.user}</div>
+            <div class="text-xs text-slate-300">${new Date(r.ts).toLocaleString()}</div>
+          </div>
+          <div class="mt-1 text-sm text-slate-200">${r.comment ? escapeHtml(r.comment) : '<span class="text-slate-400">No comment</span>'}</div>
+          <div class="mt-2 flex items-center gap-2 text-xs text-slate-300">
+            ${r.star ? '★'.repeat(r.star) + ' ' : ''} ${r.emoji ? emojiLabel(r.emoji) : ''} ${r.score !== null ? ' • '+r.score+'/10' : ''}
+          </div>
+        </div>
+        ${r.screenshot ? `<img src="${r.screenshot}" class="thumb" />` : ''}
+      </div>`;
+      reviewsEl.appendChild(d);
+    });
+  }
+
+  function emojiLabel(n){
+    if(n==1) return '😡';
+    if(n==2) return '😕';
+    if(n==3) return '🙂';
+    if(n==4) return '😊';
+    if(n==5) return '🤩';
+    return '';
+  }
+
+  function escapeHtml(unsafe){
+    return unsafe.replace(/[&<"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','"':'&quot;',"'":'&#039;'}[m]); });
+  }
+
+  // wire up each dashboard: ids are dash1, dash2, dash3
+  const DASHES = ['dash1','dash2','dash3'];
+  DASHES.forEach(d=>{
+    // stars containers named #stars_dashX and average #avg_dashX
+    initStars(d, 'stars_'+d, 'avg_'+d);
+
+    // emoji clicks
+    document.querySelectorAll(`button.emoji-btn[data-dash="${d}"]`).forEach(btn=>{
+      btn.addEventListener('click', ()=> {
+        const em = +btn.dataset.emoji;
+        // read current slider and comment
+        const scoreEl = document.getElementById('slider_'+d);
+        const score = scoreEl ? +scoreEl.value : null;
+        const commentEl = document.getElementById('comment_'+d);
+        const comment = commentEl ? commentEl.value.trim() : '';
+        // take star from last selected (or null)
+        const star = null; // keep star null if not clicked
+        // If user wants star explicitly they can click star
+        addRating(d, star, em, score, comment, null);
+        // reset comment? keep as is
+        // refresh UI
+        renderAllAverages();
+      });
+    });
+
+    // slider display
+    const slider = document.getElementById('slider_'+d);
+    const sliderVal = document.getElementById('sliderVal_'+d);
+    if(slider && sliderVal){
+      slider.addEventListener('input', ()=> sliderVal.innerText = slider.value);
+    }
+
+    // file input controls
+    const chooseBtn = document.getElementById('choose_'+d);
+    const fileInput = document.getElementById('file_'+d);
+    const preview = document.getElementById('preview_'+d);
+    chooseBtn?.addEventListener('click', ()=> fileInput.click());
+    fileInput?.addEventListener('change', async (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      const dataUrl = await fileToDataUrl(f);
+      // show tiny preview and store dataUrl temporarily on element
+      preview.innerHTML = `<img src="${dataUrl}" class="thumb" />`;
+      preview.dataset.img = dataUrl;
+    });
+
+    // submit feedback
+    const submit = document.getElementById('submit_'+d);
+    submit?.addEventListener('click', ()=> {
+      const comment = document.getElementById('comment_'+d)?.value.trim();
+      const score = +document.getElementById('slider_'+d)?.value;
+      // star value: if user clicked star previously it would call addRating with star param; we also allow collecting star via star control by adding click handler to stars below
+      // To support star selection we listen to star clicks earlier (initStars used addRating). But here we'll also allow reading currently highlighted stars visually: count filled stars
+      const starCount = (()=> {
+        const c = document.getElementById('stars_'+d);
+        if(!c) return null;
+        return Array.from(c.querySelectorAll('.star')).reduce((s,el)=> s + (el.innerHTML.trim() === '★' ? 1 : 0), 0) || null;
+      })();
+
+      const screenshot = (document.getElementById('preview_'+d)?.dataset || {}).img || null;
+      // add entry
+      addRating(d, starCount, null, score, comment, screenshot);
+      // clear UI
+      document.getElementById('comment_'+d).value = '';
+      document.getElementById('file_'+d).value = '';
+      document.getElementById('preview_'+d).innerHTML = '';
+      delete document.getElementById('preview_'+d).dataset.img;
+      // feedback toast
+      showToast('Thanks! Feedback saved locally.');
+    });
+
+    // clear feedback form
+    const clearBtn = document.getElementById('clear_'+d);
+    clearBtn?.addEventListener('click', ()=>{
+      document.getElementById('comment_'+d).value = '';
+      document.getElementById('file_'+d).value = '';
+      document.getElementById('preview_'+d).innerHTML = '';
+      document.getElementById('slider_'+d).value = 8;
+      document.getElementById('sliderVal_'+d).innerText = 8;
+    });
+  });
+
+  function renderAllAverages(){
+    DASHES.forEach(d=>{
+      renderAverageStars(d, 'stars_'+d, 'avg_'+d);
+      renderReviewsFor(d);
+    });
+  }
+
+  // helper: convert file to dataURL
+  function fileToDataUrl(file){
+    return new Promise((res, rej)=>{
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  // small toast
+  function showToast(msg){
+    const t = document.createElement('div');
+    t.className = 'fixed left-1/2 -translate-x-1/2 bottom-24 bg-white/90 text-slate-900 p-3 rounded shadow';
+    t.innerText = msg;
+    document.body.appendChild(t);
+    setTimeout(()=> t.style.opacity = '1', 20);
+    setTimeout(()=> { t.style.opacity = '0'; setTimeout(()=> t.remove(),400); }, 3000);
+  }
+
+  // ---------- render on load ----------
+  window.addEventListener('load', ()=>{
+    renderAllAverages();
+  });
+
+  // ---------- CHAT + VOICE UI (same as index) ----------
+  const openChat = document.getElementById('openChat');
+  const chatPanel = document.getElementById('chatPanel');
+  const closeChat = document.getElementById('closeChat');
+  const chatForm = document.getElementById('chatForm');
+  const chatInput = document.getElementById('chatInput');
+  const chatHistory = document.getElementById('chatHistory');
+  const typingIndicator = document.getElementById('typingIndicator');
+  const micBtn = document.getElementById('micBtn');
+  const recordIndicator = document.getElementById('recordIndicator');
+  const BASE_URL = "http://127.0.0.1:8000"; // change when backend ready
+
+  openChat?.addEventListener('click', ()=> { chatPanel.classList.toggle('hidden'); setTimeout(()=> chatPanel.classList.toggle('open'), 20); chatInput?.focus(); });
+  closeChat?.addEventListener('click', ()=> { chatPanel.classList.remove('open'); setTimeout(()=> chatPanel.classList.add('hidden'), 250); });
+
+  function pushUserMessage(text){ chatHistory.innerHTML += `<div class="text-right mb-2"><span class="inline-block bg-blue-600 text-white px-3 py-1 rounded">${escapeHtml(text)}</span></div>`; chatHistory.scrollTop = chatHistory.scrollHeight; }
+  function pushBotMessage(text){ chatHistory.innerHTML += `<div class="text-left mb-2"><span class="inline-block bg-white/90 text-slate-900 px-3 py-1 rounded">${escapeHtml(text)}</span></div>`; chatHistory.scrollTop = chatHistory.scrollHeight; }
+
+  chatForm?.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const txt = chatInput.value.trim();
+    if(!txt) return;
+    pushUserMessage(txt);
+    chatInput.value='';
+    showTyping();
+    try {
+      const res = await fetch(`${BASE_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ message: txt })});
+      if(res.ok){ const j = await res.json(); hideTyping(); pushBotMessage(j.reply || 'No reply'); }
+      else { hideTyping(); pushBotMessage('Demo reply (backend not available).'); }
+    } catch(err){ hideTyping(); pushBotMessage('Demo reply (offline)'); }
+  });
+
+  // Voice recording (frontend only) — uses /api/stt when backend available
+  let mediaRecorder, chunks=[], recording=false;
+  micBtn?.addEventListener('click', async ()=>{
+    if(!recording){
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        chunks = [];
+        mediaRecorder.ondataavailable = e=> chunks.push(e.data);
+        mediaRecorder.onstop = async ()=>{
+          recordIndicator?.classList.add('hidden');
+          micBtn.classList.remove('mic-pulse');
+          const blob = new Blob(chunks, { type:'audio/webm' });
+          // send to STT -> Chat -> TTS (if backend)
+          try {
+            showTyping();
+            const fd = new FormData(); fd.append('file', blob, 'voice.webm');
+            const r = await fetch(`${BASE_URL}/api/stt`, { method:'POST', body: fd });
+            if(r.ok){ const j = await r.json(); hideTyping(); const text = j.text || ''; pushUserMessage(text); // send to chat
+              const c = await fetch(`${BASE_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ message: text })});
+              if(c.ok){ const jr = await c.json(); pushBotMessage(jr.reply || ''); /* request /api/tts optionally */ }
+            } else { hideTyping(); pushBotMessage('STT failed (backend)'); }
+          } catch(err){ hideTyping(); pushBotMessage('Voice demo (backend unreachable)'); }
+        };
+        mediaRecorder.start();
+        recording = true;
+        recordIndicator?.classList.remove('hidden');
+        micBtn.classList.add('mic-pulse');
+      } catch(err){ alert('Microphone access denied'); }
+    } else {
+      mediaRecorder.stop();
+      recording = false;
+    }
+  });
+
+  function showTyping(){ typingIndicator?.classList.remove('hidden'); }
+  function hideTyping(){ typingIndicator?.classList.add('hidden'); }
+
+  // small helper
+  function escapeHtml(unsafe){ return unsafe.replace(/[&<"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','"':'&quot;',"'":'&#039;'}[m]); }); }
+
+  // ---------- DONE ----------
+</script>
+
+</body>
+</html>

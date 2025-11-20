@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Global Travel Insights — Landing</title>
+
+  <!-- Tailwind (quick prototyping) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS (scroll animations) -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --deep:#07122b;
+      --ocean:#0ea5e9;
+      --sea:#06b6d4;
+      --accent:#7c3aed;
+      --glass: rgba(255,255,255,0.08);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #021029 0%, #032c3b 100%);
+      color: #e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+    }
+
+    /* container */
+    .max-w-screen-xxl { max-width: 1280px; }
+
+    /* glass */
+    .glass {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
+    }
+
+    /* subtle glow */
+    .glow {
+      box-shadow: 0 10px 40px rgba(6,182,212,0.06), inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+
+    /* card hover */
+    .card-hover { transition: transform .28s, box-shadow .28s; }
+    .card-hover:hover { transform: translateY(-10px); box-shadow: 0 30px 50px rgba(0,0,0,0.35); }
+
+    /* counters */
+    .metric { font-weight:800; font-size:1.55rem; color:#dbeafe; }
+
+    /* globe */
+    .globe-wrap { position: relative; width:100%; height:420px; display:flex; align-items:center; justify-content:center; }
+    .globe { width:420px; height:420px; border-radius:50%; background: radial-gradient(circle at 30% 20%, rgba(14,165,233,0.12), rgba(124,58,237,0.06)), linear-gradient(180deg,#063852 0%, #0a2740 100%); display:flex; align-items:center; justify-content:center; overflow:hidden; box-shadow: 0 20px 60px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.04); }
+    /* simple rotating lines on globe */
+    .globe::after { content:""; position:absolute; inset:0; background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.02), transparent 20%), linear-gradient(90deg, rgba(255,255,255,0.01), transparent); mix-blend-mode: overlay; animation: globeRotate 30s linear infinite; opacity:.9; }
+    @keyframes globeRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* floating nav accent */
+    .nav-pill { background: linear-gradient(90deg, rgba(6,182,212,0.14), rgba(124,58,237,0.12)); padding:.35rem .7rem; border-radius:999px; border:1px solid rgba(255,255,255,0.03); }
+
+    /* chat panel */
+    #chatPanel { width:360px; max-width:92vw; transform: translateY(20px) scale(.96); opacity:0; transition: .28s ease; }
+    #chatPanel.open { transform: translateY(0) scale(1); opacity:1; }
+
+    /* mic pulse */
+    .mic-pulse { animation: micPulse 1.4s infinite; }
+    @keyframes micPulse { 0%{ box-shadow:0 0 0 0 rgba(14,165,233,0.3)} 70%{ box-shadow:0 0 0 14px rgba(14,165,233,0)} 100%{ box-shadow:0 0 0 0 rgba(14,165,233,0)} }
+
+    /* typing dots */
+    .typing { display:inline-block; width:6px; height:6px; margin-right:5px; background:var(--ocean); border-radius:999px; animation: blink 1s infinite; opacity:.3; }
+    .typing:nth-child(2){ animation-delay:.15s; }
+    .typing:nth-child(3){ animation-delay:.3s; }
+    @keyframes blink { 0%{ opacity:.2 } 100%{ opacity:1 } }
+
+    /* small responsive tweaks */
+    @media (max-width:768px) {
+      .globe { width:300px; height:300px; }
+      .globe-wrap { height:320px; }
+    }
+  </style>
+  <style>
+@keyframes slideDown {
+  0% { transform: translateY(-20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.toast-noti {
+  animation: slideDown .5s ease forwards;
+}
+</style>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50">
+    <div class="max-w-screen-xxl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-blue-600 flex items-center justify-center text-white font-bold shadow-lg">GT</div>
+        <div class="text-white font-extrabold text-xl">Global Travel Insights</div>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-5 text-slate-100">
+        <a href="dashboards.html" class="hover:text-white">Dashboards</a>
+        <a href="./stories/storytelling.html">Stories</a>
+
+        <a href="insights.html" class="hover:text-white">Insights</a>
+        <a href="feedback.html" class="hover:text-white">Feedback</a>
+
+        <a href="notifications.html"> <span id="navNotifications" style="display:none;" class="nav-pill text-sm text-slate-100">Notifications 🔔</span></a>
+        <a id="navQuiz" style="display:none;" href="quiz.html" class="text-slate-100">Quiz 📝</a>
+
+        <!-- login/register shown before login -->
+        <a id="navLogin" href="login.html" class="px-3 py-2 rounded bg-white/6 text-white">Login</a>
+        <a id="navCreate" href="register.html" class="px-3 py-2 rounded bg-white/10 text-white">Create</a>
+
+        <!-- profile/logout shown after login -->
+        <a id="navProfile" href="profile.html" style="display:none;" class="px-3 py-2 rounded bg-white text-blue-800 font-semibold">Profile</a>
+        <button id="navLogout" style="display:none;" class="px-3 py-2 rounded bg-red-600 text-white">Logout</button>
+      </nav>
+
+      <!-- mobile menu -->
+      <div class="md:hidden">
+        <button id="mobileToggle" class="text-white text-2xl">☰</button>
+      </div>
+    </div>
+
+    <!-- mobile dropdown -->
+    <div id="mobileMenu" class="hidden bg-white/3 backdrop-blur-sm p-4 md:hidden">
+      <a href="dashboards.html" class="block py-2 text-white">Dashboards</a>
+      <a href="insights.html" class="block py-2 text-white">Insights</a>
+      <a href="feedback.html" class="block py-2 text-white">Feedback</a>
+      <a href="notifications.html" class="">Notifications</a>
+      <a id="mNavLogin" href="login.html" class="block py-2 text-white">Login</a>
+      <a id="mNavCreate" href="register.html" class="block py-2 text-white">Create</a>
+         
+      <a id="mNavProfile" href="profile.html" class="block py-2 text-white" style="display:none;">Profile</a>
+      <button id="mNavLogout" class="block w-full text-left py-2 text-white bg-red-600 rounded mt-2" style="display:none;">Logout</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main class="max-w-screen-xxl mx-auto px-6 py-12">
+
+    <section class="grid lg:grid-cols-2 gap-8 items-center">
+
+      <!-- LEFT: headline + CTAs -->
+      <div data-aos="fade-up" class="space-y-6">
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
+          See travel trends at a glance — <span style="color:var(--ocean)">global</span>, <span style="color:var(--sea)">actionable</span>, instant.
+        </h1>
+
+        <p class="text-slate-200 max-w-xl">
+          Live dashboards, destination popularity, spending heatmaps and an AI voice assistant to ask questions in natural language. Designed for analysts and product teams.
+        </p>
+
+        <div class="flex gap-4">
+          <a href="dashboards.html" class="px-6 py-3 rounded-lg bg-gradient-to-r from-teal-400 to-blue-600 text-white font-semibold shadow-lg hover:scale-105 transition">Explore Dashboards</a>
+          <a href="register.html" class="px-6 py-3 rounded-lg border border-white/10 text-white">Create account</a>
+        </div>
+
+        <!-- Metrics -->
+        <div class="mt-6 grid grid-cols-3 gap-4">
+          <div class="glass p-4 rounded-xl card-hover">
+            <div class="text-xs text-slate-300">Total Travelers</div>
+            <div class="metric" data-target="399000000000">0</div>
+            <div class="text-xs text-slate-400">demo</div>
+          </div>
+          <div class="glass p-4 rounded-xl card-hover">
+            <div class="text-xs text-slate-300">Total Spending</div>
+            <div class="metric" data-target="171450000000000">0</div>
+            <div class="text-xs text-slate-400">USD (demo)</div>
+          </div>
+          <div class="glass p-4 rounded-xl card-hover">
+            <div class="text-xs text-slate-300">Avg / Year</div>
+            <div class="metric" data-target="1500000000">0</div>
+            <div class="text-xs text-slate-400">demo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: globe visual + small overlays -->
+      <div class="globe-wrap" data-aos="zoom-in">
+        <div class="globe relative">
+          <!-- Placeholder rotating globe SVG / replace with your SVG -->
+          <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="g" cx="30%" cy="20%">
+                <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.18"/>
+                <stop offset="70%" stop-color="#075985" stop-opacity="0.22"/>
+              </radialGradient>
+            </defs>
+            <circle cx="100" cy="100" r="96" fill="url(#g)"/>
+            <!-- simplified map points -->
+            <g fill="#cffafe" transform="translate(8,6)">
+              <circle cx="50" cy="30" r="2.6" opacity="0.9"/>
+              <circle cx="80" cy="65" r="2.2" opacity="0.9"/>
+              <circle cx="30" cy="110" r="2.0" opacity="0.9"/>
+              <circle cx="120" cy="40" r="2.6" opacity="0.9"/>
+              <circle cx="150" cy="120" r="2.4" opacity="0.9"/>
+            </g>
+          </svg>
+
+          <!-- overlays: quick stats -->
+          <div class="absolute -left-6 -top-6 glass p-3 rounded-xl w-40 text-slate-100 shadow">
+            <div class="text-xs">Top Destination</div>
+            <div class="font-bold">Maldives</div>
+            <div class="text-xs text-slate-300">+8.2% visits</div>
+          </div>
+
+          <div class="absolute -right-6 bottom-4 glass p-3 rounded-xl w-44 text-slate-100 shadow">
+            <div class="text-xs">Peak Month</div>
+            <div class="font-bold">Dec</div>
+            <div class="text-xs text-slate-300">Holiday season</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD PREVIEWS -->
+    <section class="mt-12 grid md:grid-cols-3 gap-6">
+      <div class="glass rounded-2xl p-6 card-hover" data-aos="fade-up">
+        <h3 class="font-semibold text-white">Destination Popularity</h3>
+        <p class="text-slate-300 text-sm mt-2">Heat maps & top countries</p>
+        <div class="mt-4 flex items-center justify-between">
+          <a href="dashboards.html#dash1" class="px-3 py-2 bg-gradient-to-r from-teal-400 to-blue-500 rounded text-white">Open</a>
+          <div class="text-xs text-slate-300">Top: Maldives (demo)</div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="100">
+        <h3 class="font-semibold text-white">Travel Statistics</h3>
+        <p class="text-slate-300 text-sm mt-2">Arrivals, departures & receipts</p>
+        <div class="mt-4 flex items-center justify-between">
+          <a href="dashboards.html#dash2" class="px-3 py-2 bg-gradient-to-r from-teal-400 to-blue-500 rounded text-white">Open</a>
+          <div class="text-xs text-slate-300">Arrivals · Departures</div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="200">
+        <h3 class="font-semibold text-white">Recovery & Impact</h3>
+        <p class="text-slate-300 text-sm mt-2">Recovery index & monthly comparison</p>
+        <div class="mt-4 flex items-center justify-between">
+          <a href="dashboards.html#dash3" class="px-3 py-2 bg-gradient-to-r from-teal-400 to-blue-500 rounded text-white">Open</a>
+          <div class="text-xs text-slate-300">Recovery index</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="mt-12 grid md:grid-cols-3 gap-6">
+      <div class="glass p-5 rounded-xl" data-aos="fade-right">
+        <h4 class="font-semibold text-white">AI Chat & Voice</h4>
+        <p class="text-slate-300 text-sm mt-2">Ask natural language questions about destinations, spending and trends.</p>
+      </div>
+      <div class="glass p-5 rounded-xl" data-aos="fade-up" data-aos-delay="100">
+        <h4 class="font-semibold text-white">Feedback & Ratings</h4>
+        <p class="text-slate-300 text-sm mt-2">Emoji ratings, screenshots and comments for each dashboard.</p>
+      </div>
+      <div class="glass p-5 rounded-xl" data-aos="fade-left" data-aos-delay="200">
+        <h4 class="font-semibold text-white">Interactive Quizzes</h4>
+        <p class="text-slate-300 text-sm mt-2">Test knowledge with quizzes and leaderboards.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CHAT & VOICE (floating) -->
+  <div id="chatBtn" class="fixed right-6 bottom-6 z-50">
+    <button id="openChat" title="Open Assistant"
+            class="bg-gradient-to-br from-teal-400 to-blue-600 p-3 rounded-full shadow-lg text-white transform hover:scale-110 transition mic-pulse">
+      💬
+    </button>
+  </div>
+
+  <!-- Chat panel (hidden by default) -->
+  <div id="chatPanel" class="hidden fixed right-6 bottom-28 bg-white rounded-2xl shadow-2xl z-60" style="width:360px; max-width:92vw;">
+    <div class="p-3 flex items-center justify-between border-b border-white/6">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-blue-600 flex items-center justify-center text-white font-bold">AI</div>
+        <div>
+          <div class="font-semibold text-slate-900">Assistant</div>
+          <div class="text-xs text-slate-500">Ask anything — voice or type</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="micBtn" class="px-3 py-1 rounded-full bg-teal-400 text-white shadow">🎤</button>
+        <button id="closeChat" class="text-slate-500">✕</button>
+      </div>
+    </div>
+
+    <div id="chatHistory" class="p-4 h-64 overflow-y-auto bg-white/40"></div>
+
+    <div id="typingIndicator" class="px-4 pb-2 hidden text-slate-600">
+      <span class="typing"></span><span class="typing"></span><span class="typing"></span> Assistant is typing...
+    </div>
+
+    <div id="recordIndicator" class="px-4 pb-2 hidden text-red-600 font-medium text-center">🎙 Listening...</div>
+
+    <form id="chatForm" class="flex items-center gap-2 p-3 border-t border-white/6 bg-white/30">
+      <input id="chatInput" class="flex-1 bg-transparent border border-white/6 rounded px-3 py-2 text-slate-900" placeholder="Try: 'Top destinations 2024'">
+      <button class="px-4 py-2 rounded bg-gradient-to-br from-teal-400 to-blue-600 text-white">Send</button>
+    </form>
+  </div>
+
+  <!-- small footer -->
+  <footer class="text-center py-6 text-slate-300">
+    © Global Travel Insights — Demo. Connect backend for live AI & data.
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    AOS.init({ duration: 800, once: true });
+
+    // ---------- NAV MOBILE ----------
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileToggle?.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // ---------- AUTH NAV CONTROL (applies on all pages) ----------
+    function setupAuthNav() {
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+
+      const navLogin = document.getElementById("navLogin");
+      const navCreate = document.getElementById("navCreate");
+      const navProfile = document.getElementById("navProfile");
+      const navLogout = document.getElementById("navLogout");
+      const navNotifications = document.getElementById("navNotifications");
+      const navQuiz = document.getElementById("navQuiz");
+
+      const mNavLogin = document.getElementById("mNavLogin");
+      const mNavCreate = document.getElementById("mNavCreate");
+      const mNavProfile = document.getElementById("mNavProfile");
+      const mNavLogout = document.getElementById("mNavLogout");
+
+      // If logged in, enable logged-in navigation
+if (localStorage.getItem("loggedIn") === "true") {
+    document.getElementById("navLogin").style.display = "none";
+    document.getElementById("navCreate").style.display = "none";
+
+    document.getElementById("navNotifications").style.display = "inline-block";
+    document.getElementById("navQuiz").style.display = "inline-block";
+    document.getElementById("navProfile").style.display = "inline-block";
+    document.getElementById("navLogout").style.display = "inline-block";
+}
+
+
+
+      if (loggedIn) {
+        if(navLogin) navLogin.style.display = "none";
+        if(navCreate) navCreate.style.display = "none";
+        if(navProfile) navProfile.style.display = "inline-block";
+        if(navLogout) navLogout.style.display = "inline-block";
+        if(navNotifications) navNotifications.style.display = "inline-block";
+        if(navQuiz) navQuiz.style.display = "inline-block";
+
+        if(mNavLogin) mNavLogin.style.display = "none";
+        if(mNavCreate) mNavCreate.style.display = "none";
+        if(mNavProfile) mNavProfile.style.display = "block";
+        if(mNavLogout) mNavLogout.style.display = "block";
+      } else {
+        if(navLogin) navLogin.style.display = "inline-block";
+        if(navCreate) navCreate.style.display = "inline-block";
+        if(navProfile) navProfile.style.display = "none";
+        if(navLogout) navLogout.style.display = "none";
+        if(navNotifications) navNotifications.style.display = "none";
+        if(navQuiz) navQuiz.style.display = "none";
+
+        if(mNavLogin) mNavLogin.style.display = "block";
+        if(mNavCreate) mNavCreate.style.display = "block";
+        if(mNavProfile) mNavProfile.style.display = "none";
+        if(mNavLogout) mNavLogout.style.display = "none";
+      }
+
+      if (localStorage.getItem("loggedIn") === "true") {
+    document.getElementById("mobileNavLogin").style.display = "none";
+    document.getElementById("mobileNavCreate").style.display = "none";
+
+    document.getElementById("mobileNavNotifications").style.display = "block";
+    document.getElementById("mobileNavQuiz").style.display = "block";
+    document.getElementById("mobileNavProfile").style.display = "block";
+    document.getElementById("mobileNavLogout").style.display = "block";
+}
+
+
+      if(navLogout) navLogout.onclick = () => { localStorage.setItem("loggedIn","false"); window.location.href = "login.html"; };
+      if(mNavLogout) mNavLogout.onclick = () => { localStorage.setItem("loggedIn","false"); window.location.href = "login.html"; };
+    }
+    setupAuthNav();
+
+    // ---------- COUNTERS ----------
+    function formatNumber(n){
+      if (n >= 1e12) return (n/1e12).toFixed(2) + 'T';
+      if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+      return n.toLocaleString();
+    }
+    function animateMetrics(){
+      document.querySelectorAll('[data-target]').forEach(el => {
+        const target = +el.getAttribute('data-target');
+        let cur = 0;
+        const step = Math.max(1, Math.floor(target / 220));
+        const run = () => {
+          cur += step;
+          if (cur < target) { el.innerText = formatNumber(cur); requestAnimationFrame(run); }
+          else el.innerText = formatNumber(target);
+        };
+        run();
+      });
+    }
+    window.addEventListener('load', () => { setTimeout(animateMetrics, 500); });
+
+    // ---------- CHAT & VOICE (FRONTEND ONLY) ----------
+    const BASE_URL = "http://127.0.0.1:8000"; // update later when backend ready
+
+    const openChat = document.getElementById('openChat');
+    const chatPanel = document.getElementById('chatPanel');
+    const closeChat = document.getElementById('closeChat');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatHistory = document.getElementById('chatHistory');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const micBtn = document.getElementById('micBtn');
+    const recordIndicator = document.getElementById('recordIndicator');
+
+    function escapeHtml(s){ return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    // open/close chat
+    openChat?.addEventListener('click', () => {
+      chatPanel.classList.toggle('hidden');
+      setTimeout(()=> chatPanel.classList.toggle('open'), 20);
+      chatInput?.focus();
+    });
+    closeChat?.addEventListener('click', () => {
+      chatPanel.classList.remove('open');
+      setTimeout(()=> chatPanel.classList.add('hidden'), 250);
+    });
+
+    function pushUserMessage(text) {
+      const d = document.createElement('div'); d.className = 'text-right';
+      d.innerHTML = `<div class="inline-block bg-gradient-to-r from-teal-300 to-blue-400 text-white px-3 py-2 rounded-lg shadow">${escapeHtml(text)}</div><div class="text-xs text-slate-400 mt-1">You</div>`;
+      chatHistory.appendChild(d); chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+    function pushBotMessage(text) {
+      const d = document.createElement('div'); d.className = 'text-left';
+      d.innerHTML = `<div class="inline-block bg-white/90 text-slate-900 px-3 py-2 rounded-lg shadow">${escapeHtml(text)}</div><div class="text-xs text-slate-500 mt-1">Assistant</div>`;
+      chatHistory.appendChild(d); chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    function showTyping(){ typingIndicator.classList.remove('hidden'); }
+    function hideTyping(){ typingIndicator.classList.add('hidden'); }
+
+    // SEND typed message
+    chatForm?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const msg = chatInput.value.trim();
+      if(!msg) return;
+      pushUserMessage(msg);
+      chatInput.value = '';
+      // show typing while waiting
+      showTyping();
+
+      // When backend ready: send to /api/chat; below is fallback demo
+      try {
+        // optimistic: try backend
+        const res = await fetch(`${BASE_URL}/api/chat`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ message: msg })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          hideTyping();
+          pushBotMessage(data.reply || 'No reply from backend.');
+          // request TTS (optional)
+          playTTS(data.reply || '');
+        } else {
+          // fallback demo
+          hideTyping();
+          pushBotMessage('Demo reply — connect backend for live AI.');
+        }
+      } catch (err) {
+        hideTyping();
+        pushBotMessage('Offline demo reply — backend not reachable.');
+      }
+    });
+
+    // RECORDING (frontend logic) — sends audio to /api/stt
+    let mediaRecorder, chunks = [], recording = false;
+    micBtn?.addEventListener('click', async () => {
+      if (!recording) {
+        // start recording
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          chunks = [];
+          mediaRecorder.ondataavailable = e => chunks.push(e.data);
+          mediaRecorder.onstop = async () => {
+            recordIndicator?.classList.add('hidden');
+            micBtn.classList.remove('mic-pulse');
+            const blob = new Blob(chunks, { type: 'audio/webm' });
+            // send to backend STT
+            try {
+              showTyping();
+              const fd = new FormData();
+              fd.append('file', blob, 'voice.webm');
+              const r = await fetch(`${BASE_URL}/api/stt`, { method: 'POST', body: fd });
+              if (r.ok) {
+                const j = await r.json();
+                hideTyping();
+                const text = j.text || '';
+                if (text) {
+                  pushUserMessage(text);
+                  // send to chat
+                  const cr = await fetch(`${BASE_URL}/api/chat`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ message: text }) });
+                  if (cr.ok) {
+                    const jr = await cr.json();
+                    pushBotMessage(jr.reply || 'No reply.');
+                    // play TTS
+                    await playTTS(jr.reply || '');
+                  } else {
+                    pushBotMessage('Chat backend error.');
+                  }
+                } else {
+                  pushBotMessage('No speech detected.');
+                }
+              } else {
+                hideTyping();
+                pushBotMessage('STT failed on backend.');
+              }
+            } catch (err) {
+              hideTyping();
+              pushBotMessage('Network error contacting backend STT/Chat.');
+            }
+          };
+          mediaRecorder.start();
+          recording = true;
+          recordIndicator?.classList.remove('hidden');
+          micBtn.classList.add('mic-pulse');
+        } catch (err) {
+          alert('Microphone access denied.');
+        }
+      } else {
+        // stop
+        mediaRecorder.stop();
+        recording = false;
+      }
+    });
+
+    // TTS play from backend (POST /api/tts returns audio binary)
+    async function playTTS(text) {
+      if (!text) return;
+      try {
+        const res = await fetch(`${BASE_URL}/api/tts`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ text })
+        });
+        if (!res.ok) throw new Error('TTS failed');
+        const arrayBuffer = await res.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+      } catch (err) {
+        console.warn('TTS play failed', err);
+      }
+    }
+
+    // ---------- small helper: increment stat when dashboards opened ----------
+    window.incStatDash = function(){ const cur = +localStorage.getItem('statDash')||0; localStorage.setItem('statDash', cur+1); };
+    window.incStatFeedback = function(){ const cur = +localStorage.getItem('statFeedback')||0; localStorage.setItem('statFeedback', cur+1); };
+    window.incStatQuiz = function(){ const cur = +localStorage.getItem('statQuiz')||0; localStorage.setItem('statQuiz', cur+1); };
+
+    // ---------- health test (optional) ----------
+    async function backendHealth(){
+      try {
+        const r = await fetch(BASE_URL + '/api/health');
+        return r.ok;
+      } catch(e) { return false; }
+    }
+  </script>
+
+  <script>
+// Notification Popup
+function showToast(message) {
+  const popup = document.createElement("div");
+  popup.className =
+    "toast-noti fixed top-6 right-6 bg-white/70 glass px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-[9999]";
+
+  popup.innerHTML = `
+      <span class="text-2xl">🔔</span>
+      <span class="font-semibold text-blue-900">${message}</span>
+  `;
+
+  document.body.appendChild(popup);
+
+  setTimeout(() => {
+    popup.style.opacity = "0";
+    popup.style.transform = "translateY(-10px)";
+    setTimeout(() => popup.remove(), 500);
+  }, 4000);
+
+  const audio = new Audio("assets/sounds/ping.mp3");
+  audio.volume = 0.5;
+  audio.play();
+
+  let logs = JSON.parse(localStorage.getItem("notifications") || "[]");
+  logs.unshift({
+    id: Date.now(),
+    text: message,
+    time: new Date().toLocaleString()
+  });
+  localStorage.setItem("notifications", JSON.stringify(logs));
+}
+</script>
+
+  
+</body>
+</html>
