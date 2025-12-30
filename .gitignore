@@ -1,0 +1,31 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables
+.env
+
+# VS Code settings
+.vscode/
+
+# FastAPI temp files
+*.log
+*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node / tailwind (if used later)
+node_modules/
+
+# Build files
+dist/
+build/
+
+# Audio temp files
+*.webm
+*.mp3
+*.wav
+tmp_*
